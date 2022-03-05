@@ -6,6 +6,7 @@ import paho.mqtt.client as mqtt
 
 import config
 from const import (
+    CLIENTID,
     COMPONENT,
     MQTT,
     MQTTHOST,
@@ -30,15 +31,16 @@ def connect():
     global mqttc
     component = config.get(COMPONENT)
     cfg = config.get(MQTT)
+    clientid = config.get(CLIENTID)
     mqtthost = cfg[MQTTHOST]
     mqttport = cfg[MQTTPORT]
    
-    clientid = component + str(os.getpid())
-    
     mqttc = mqtt.Client(clientid)
     mqttc._keepalive = 60 #TODO: make this configurable
     mqttc.on_connect = on_connect
     mqttc.on_disconnect = on_disconnect
+    mqttc._clean_session = False
+    
     try:
         mqttc.connect(mqtthost,mqttport)
     except Exception as e:
@@ -55,7 +57,7 @@ def create_entity(entity):
         if not flag_connected:
             connect()
 
-        mqttc.publish(topic, payload=data, qos=0, retain=True)
+        mqttc.publish(topic, payload=data, qos=1, retain=True)
     except Exception as e:
         logger.error("Failed to publish to MQTT topic {}: ".format(topic, e))
         exit()    
@@ -72,7 +74,7 @@ def publish_value(entity):
         if not flag_connected:
             connect()
 
-        mqttc.publish(topic, payload=jdata, qos=0, retain=True)
+        mqttc.publish(topic, payload=jdata, qos=1, retain=True)
         logger.debug("Sending {} on {}.".format(jdata, topic))
     except Exception as e:
         logger.error("Failed to publish to MQTT topic {}: ".format(topic, e))

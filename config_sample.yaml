@@ -1,14 +1,17 @@
-# The name of the device in Home Assistant
-# If you want to connect multiple instance of Ökofen heating systems 
-# (i.e. 2 different connections) to the same Home Assistant, you must
-# run two different instances of hamok
+# MQTT configuration
+# you need to specify the broker ip address.
+# you can specify the broker port, which defaults to 1883
 
-device: oekofen
- 
+mqtt:
+  broker: <Host name or IP address of MQTT broker>
+#  port: 1883
 
-# interval between 2 measurements
-# interval: 60
 
+# Ökofen JSON connection
+oekofen:
+  host: <Host name or IP address of MQTT broker>
+  jsonport: <Ökofen JSON port
+  jsonpassword: <Ökofen JSON password>
 
 # Monitors to create. To find the values you can put here 
 # use the --list option.
@@ -22,19 +25,14 @@ monitor:
 #  - pe1.mode             # sensor (select)
 
 
-# MQTT configuration
-# you need to specify the broker ip address.
-# you can specify the broker port, which defaults to 1883
-# mqtt:
-#   broker: 127.0.0.1
-#   port: 1883 # default value and can be omitted
+# interval between 2 measurements
+# interval: 60
 
-mqtt:
-  broker: 192.168.1.2
+# The name of the device in Home Assistant
+# If you want to connect multiple instance of Ökofen heating systems 
+# (i.e. 2 different connections) to the same Home Assistant, you must
+# run two different instances of hamok
+# device: oekofen
 
-
-# Ökofen JSON connection
-oekofen:
-  host: 192.168.1.3
-  jsonport: 1234
-  jsonpassword: aBcD
+# Client id used to connect to the MQTT broker
+# clientid: hamok
