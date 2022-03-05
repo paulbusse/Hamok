@@ -14,6 +14,7 @@ JSONPWD = "jsonpassword"
 MQTTHOST = "broker"
 MQTTPORT = "port"
 INTERVAL = "interval"
+DEVICE = "device"
 
 """ Entity Types """
 BINARYSENSOR = "binary_sensor"
@@ -47,16 +48,19 @@ TOPICROOT = 'homeassistant/'
 """ Config keys """
 LIST = "__list"
 DAEMON = "__daemon"
+CLIENTID = "clientid"
 
 
 """ Default Configuration """
 DEFAULTCONFIG = {
+    CLIENTID: "hamok",
     DAEMON: True,
     LIST: False,
     MQTT: {
         MQTTPORT: 1883
     },
     INTERVAL: 60,
+    DEVICE: "oekofen"
 }
 
 
