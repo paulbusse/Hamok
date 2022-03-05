@@ -1,0 +1,40 @@
+# The name of the device in Home Assistant
+# If you want to connect multiple instance of Ökofen heating systems 
+# (i.e. 2 different connections) to the same Home Assistant, you must
+# run two different instances of hamok
+
+device: oekofen
+ 
+
+# interval between 2 measurements
+# interval: 60
+
+
+# Monitors to create. To find the values you can put here 
+# use the --list option.
+
+monitor:
+  - system.L_ambient     # sensor (numeric)
+#  - system.L_usb_stick   # binary sensor
+#  - hk1.temp_vacation    # number
+#  - pe1_mode             # select
+#  - ww1.heat_once        # switch
+#  - pe1.mode             # sensor (select)
+
+
+# MQTT configuration
+# you need to specify the broker ip address.
+# you can specify the broker port, which defaults to 1883
+# mqtt:
+#   broker: 127.0.0.1
+#   port: 1883 # default value and can be omitted
+
+mqtt:
+  broker: 192.168.1.2
+
+
+# Ökofen JSON connection
+oekofen:
+  host: 192.168.1.3
+  jsonport: 1234
+  jsonpassword: aBcD
