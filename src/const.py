@@ -62,7 +62,7 @@ DEFAULTCONFIG = {
         MQTTPORT: 1883
     },
     INTERVAL: 60,
-    DEVICE: "oekofen"
+    DEVICE: "Oekofen"
 }
 
 

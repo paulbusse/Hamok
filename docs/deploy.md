@@ -8,6 +8,8 @@ You need:
 - An MQTT broker like ```mosquitto```
 - Of course an Ökofen system
 
+The deployment is manual at this time. I may simplify this in the future. Getting the thing running was my first priority.
+
 ## Step 1: Download the source
 
 Yep at this point in time you have to download the source. This can be done by cloning the repository or by downloading the zip file from the repository. If you don't know how to do the first, I'll explain the second:
@@ -99,10 +101,18 @@ Before running Hamok you need to install its dependencies:
 $ pip3 install -r requirements.txt
 ```
 
+Make sure that Home Assistant is running before you continue.
+
+Ensure that the file `hamok`in bin is executable. If not
+
+```bash
+$ chmod +x bin/hamok
+```
+
 Now we are ready to launch Hamök.
 
 ```bash
-$ python3 src/hamok.py -c ./config.yaml
+$ bin/hamok -c ./config.yaml
 2022-03-06 07:57:55,938 INFO       starting process
 2022-03-06 07:57:55,939 INFO       Connected to MQTT broker at <ipaddress>:<port> as hamok.
 2022-03-06 07:57:56,647 INFO       Connected to MQTT broker at <ipaddress>:<port> as hamok.
@@ -116,5 +126,51 @@ Note that the DEBUG message may not appear.
 
 If everything works well, you should see 2 things appear in Home assistant. You can check this by going to  `Configuration/Devices and Services/Integrations`. The MQTT box should show 1 device and 1 entity more than before.
 
-The device is named 
+The device is named `Oekofen`. The entity is called `sensor.oekofen_system_ambient`. If this is all there. You're ready for the next step.
+
+## Step 6: Integrating in systemd
+
+Note this step is not really necessary, but ensures that Hamök is restarted at reboot. This is focused on Raspberry OS. On other systems you may want to do different things.
+
+In the directory where you unpacked the Hamök source, there is a file `hamok_sample.service`. Copy it to `hamok.service`
+
+```bash
+$ cp hamok_sample.service hamok.service
+```
+
+The file looks like
+
+```
+[Unit]
+Description=Integrate Ökofen with HA over MQTT
+After=mosquitto.service
+Requires=mosquitto.service
+Wants=home-assistant.service
+
+[Service]
+Type=simple
+User=homeassistant
+ExecStart=<installdir>/bin/hamok -c <installdir>/config.yaml
+RestartSec=3
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Of course you have to change the `installdir`but other changes may be needed depending on your system. Hamok fails if it cannot connect to the broker. Run the following commands.
+
+```bash
+$ sudo cp hamok.service /etc/systemd/system/
+$ sudo systemctl enable hamok.service
+$ sudo systemctl start hamok.service
+```
+
+To really validate if this works properly you should reboot your system and validate that Hamök runs.
+
+## Step 7: Add entities
+
+Now is a good time to read the [manual](usage.md) and add a few entities.
+
+
 

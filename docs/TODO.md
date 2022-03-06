@@ -4,3 +4,4 @@
 - send updates on regular basis
 - send one message with all up
 - disconnect from the terminal
+- Proper configuration of the logging system. It now logs everything twice.

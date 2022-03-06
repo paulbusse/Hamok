@@ -32,7 +32,7 @@ monitor:
 # If you want to connect multiple instance of Ökofen heating systems 
 # (i.e. 2 different connections) to the same Home Assistant, you must
 # run two different instances of hamok
-# device: oekofen
+# device: Oekofen
 
 # Client id used to connect to the MQTT broker
 # clientid: hamok

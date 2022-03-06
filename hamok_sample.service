@@ -1,0 +1,15 @@
+[Unit]
+Description=Integrate Ökofen with HA over MQTT
+After=mosquitto.service
+Requires=mosquitto.service
+Wants=home-assistant.service
+
+[Service]
+Type=simple
+User=homeassistant
+ExecStart=<installdir>/bin/hamok -c <installdir>/config.yaml
+RestartSec=3
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
