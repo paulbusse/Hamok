@@ -36,3 +36,10 @@ monitor:
 
 # Client id used to connect to the MQTT broker
 # clientid: hamok
+
+# Logging configuration
+# Possible values:
+#   default: in production
+#   debug: more info in production
+#   devel: as debug but also on the screen
+# logger: default

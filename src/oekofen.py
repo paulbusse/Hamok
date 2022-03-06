@@ -1,9 +1,7 @@
 from distutils.command.build import build
 import urllib.request
 import config
-import logging
-
-logger = logging.getLogger("default")
+from llog import logger
 
 from const import (
     OEKOFEN,

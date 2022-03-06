@@ -2,7 +2,7 @@ import sys
 import logging
 
 """ 
-Keys from the configuration file
+Keys from the public configuration file
 """
 MONITOR = "monitor"
 COMPONENT = "device"
@@ -15,6 +15,8 @@ MQTTHOST = "broker"
 MQTTPORT = "port"
 INTERVAL = "interval"
 DEVICE = "device"
+CLIENTID = "clientid"
+LOGGER= "logger"
 
 """ Entity Types """
 BINARYSENSOR = "binary_sensor"
@@ -45,16 +47,16 @@ ONOFFFORMATS = [
 TOPICROOT = 'homeassistant/'
 
 
-""" Config keys """
+""" Internal Config keys """
 LIST = "__list"
 DAEMON = "__daemon"
 PRINT = "__print"
-CLIENTID = "clientid"
 
 
 """ Default Configuration """
 DEFAULTCONFIG = {
     CLIENTID: "hamok",
+    LOGGER: "default",
     DAEMON: True,
     LIST: False,
     PRINT: False,
@@ -76,7 +78,7 @@ LOGGING = {
             '%(asctime)s %(levelname)-10s %(message)s'
         },
         'syslog': {
-            'format': 'OkofenMqtt[%(process)d] %(levelname)-10s %(message)s'
+            'format': 'hamok[%(process)d] %(levelname)-8s %(message)s'
         }
     },
     'handlers': {
@@ -94,8 +96,18 @@ LOGGING = {
         },
     },
     'loggers': {
-        'default': {
+        'devel': {
             'handlers': ['sys-logger0', 'stderr'],
+            'level': logging.DEBUG,
+            'propagate': True, 
+        },
+        'default': {
+            'handlers': ['sys-logger0'],
+            'level': logging.INFO,
+            'propagate': True, 
+        },
+        'debug': {
+            'handlers': ['sys-logger0'],
             'level': logging.DEBUG,
             'propagate': True, 
         },

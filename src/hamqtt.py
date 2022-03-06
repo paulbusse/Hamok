@@ -1,9 +1,9 @@
 import os
 import json
 import datetime
-import logging
 import paho.mqtt.client as mqtt
 
+import llog
 import config
 from const import (
     CLIENTID,
@@ -14,8 +14,6 @@ from const import (
 )
 
 mqttc = None
-
-logger = logging.getLogger("default")
 
 flag_connected = 0
 
@@ -44,10 +42,10 @@ def connect():
     try:
         mqttc.connect(mqtthost,mqttport)
     except Exception as e:
-        logger.error("Failed to connect to MQTT broker at {}:{} : {}".format(mqtthost, mqttport, e))
+        llog.error("Failed to connect to MQTT broker at {}:{} : {}".format(mqtthost, mqttport, e))
         exit()
     
-    logger.info("Connected to MQTT broker at {}:{} as {}.".format(mqtthost, mqttport, clientid))
+    llog.info("Connected to MQTT broker at {}:{} as {}.".format(mqtthost, mqttport, clientid))
     
 
 def create_entity(entity):
@@ -59,9 +57,9 @@ def create_entity(entity):
 
         mqttc.publish(topic, payload=data, qos=1, retain=True)
     except Exception as e:
-        logger.error("Failed to publish to MQTT topic {}: ".format(topic, e))
+        llog.error("Failed to publish to MQTT topic {}: ".format(topic, e))
         exit()    
-    logger.info("Defining a new entity for {}.".format(entity.name))
+    llog.info("Defining a new entity for {}.".format(entity.name))
     
 def publish_value(entity):
     data = {}
@@ -75,9 +73,9 @@ def publish_value(entity):
             connect()
 
         mqttc.publish(topic, payload=jdata, qos=1, retain=True)
-        logger.debug("Sending {} on {}.".format(jdata, topic))
+        llog.debug("Sending {} on {}.".format(jdata, topic))
     except Exception as e:
-        logger.error("Failed to publish to MQTT topic {}: ".format(topic, e))
+        llog.error("Failed to publish to MQTT topic {}: ".format(topic, e))
         exit()    
-    logger.info("Setting the value of entity {} to {}.".format(entity.name, v))
+    llog.info("Setting the value of entity {} to {}.".format(entity.name, v))
     

@@ -3,8 +3,6 @@ import datetime
 import json
 import getopt
 import sys
-import logging
-import logging.config
 
 import parse
 import config
@@ -12,11 +10,12 @@ import entitylist
 import hamqtt
 import oekofen
 
+import llog
+
 from const import (
     DAEMON,
     INTERVAL,
     LIST,
-    LOGGING,
     PRINT,
 )
 
@@ -24,9 +23,6 @@ options = "c:hlp"
 longoptions = ["config=", "help", "list", "print"]
 
 configfile = None
-
-logging.config.dictConfig(LOGGING)
-logger = logging.getLogger("default")
 
 def _help():
     print("okofenmqtt options:")
@@ -69,7 +65,7 @@ def main():
     
     
     if configfile is None:
-        logger.error("No configuration file specified.")
+        llog.error("No configuration file specified.")
         _help()
         
     config.load(configfile)
@@ -79,7 +75,7 @@ def main():
         exit()
 
     if config.get(DAEMON):      
-        logger.info("starting process")
+        llog.info("starting process")
         hamqtt.connect()
         
     interval = config.get(INTERVAL)
@@ -102,7 +98,7 @@ def main():
         
         time.sleep(waittime)
         
-    logger.info("Exiting process")
+    llog.info("Exiting process")
 
 if __name__ == "__main__":
     main()

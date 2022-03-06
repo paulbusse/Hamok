@@ -1,8 +1,15 @@
 import yaml
 import collections.abc
 import copy
+from llog import changeLogger
 
-from const import DAEMON, LIST, DEFAULTCONFIG, PRINT
+from const import (
+    DAEMON,
+    LIST,
+    DEFAULTCONFIG,
+    PRINT,
+    LOGGER,
+)
 
 _config = DEFAULTCONFIG
 
@@ -17,7 +24,8 @@ def load(filename):
         cfg = yaml.full_load(file)
     
     update(_config, cfg)
-
+    validateLogger()
+        
 def cprint():
     temp = copy.deepcopy(_config)
     del temp[DAEMON]
@@ -33,3 +41,7 @@ def update(d, u):
         else:
             d[k] = v
     return d
+
+def validateLogger():
+    logmode = get(LOGGER)
+    changeLogger(logmode)

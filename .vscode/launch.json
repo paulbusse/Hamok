@@ -19,6 +19,14 @@
             "program": "${workspaceFolder}/src/hamok.py",
             "args": ["-c", "config.yaml"],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "hamok print",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/hamok.py",
+            "args": ["-p", "-c", "config.yaml"],
+            "console": "integratedTerminal"
         }
     ]
 }
