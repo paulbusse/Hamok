@@ -2,7 +2,7 @@ import yaml
 import collections.abc
 import copy
 
-from const import DAEMON, LIST, DEFAULTCONFIG
+from const import DAEMON, LIST, DEFAULTCONFIG, PRINT
 
 _config = DEFAULTCONFIG
 
@@ -22,6 +22,7 @@ def cprint():
     temp = copy.deepcopy(_config)
     del temp[DAEMON]
     del temp[LIST]
+    del temp[PRINT]
     dump = yaml.dump(temp)
     print(dump)
 

@@ -17,10 +17,11 @@ from const import (
     INTERVAL,
     LIST,
     LOGGING,
+    PRINT,
 )
 
-options = "plhc:"
-longoptions = ["list", "help", "config="]
+options = "c:hlp"
+longoptions = ["config=", "help", "list", "print"]
 
 configfile = None
 
@@ -31,6 +32,7 @@ def _help():
     print("okofenmqtt options:")
     print("  -c <file> | --config <file>: configuration file")
     print("  -l | --list: list all available entities.")
+    print("  -p | --print: print the current configuration")
     print("  -h | --help: print this help")
     print("You must specify a configuration file")
     exit()
@@ -44,6 +46,10 @@ def _handleOptions():
             if opt in ["-l", "--list"]:
                 config.set(LIST, True)
                 config.set(DAEMON, False)
+                continue
+
+            if opt in ["-p", "--print"]:
+                config.set(PRINT, True)
                 continue
 
             if opt in ["-c", "--config"]:
@@ -60,13 +66,17 @@ def _handleOptions():
 """ Main program """
 def main():
     _handleOptions()
-     
+    
+    
     if configfile is None:
         logger.error("No configuration file specified.")
         _help()
         
     config.load(configfile)
-    config.cprint()
+    
+    if config.get(PRINT):
+        config.cprint()
+        exit()
 
     if config.get(DAEMON):      
         logger.info("starting process")

@@ -48,6 +48,7 @@ TOPICROOT = 'homeassistant/'
 """ Config keys """
 LIST = "__list"
 DAEMON = "__daemon"
+PRINT = "__print"
 CLIENTID = "clientid"
 
 
@@ -56,6 +57,7 @@ DEFAULTCONFIG = {
     CLIENTID: "hamok",
     DAEMON: True,
     LIST: False,
+    PRINT: False,
     MQTT: {
         MQTTPORT: 1883
     },

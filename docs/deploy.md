@@ -91,7 +91,30 @@ This is the simplest of steps.
 
 If everything goes well you will see a success message.
 
-## Step 5: May the force be with you
+## Step 5: Running Hamok
 
-Now were going to put it all to the test.
+Before running Hamok you need to install its dependencies:
+
+```bash
+$ pip3 install -r requirements.txt
+```
+
+Now we are ready to launch Hamök.
+
+```bash
+$ python3 src/hamok.py -c ./config.yaml
+2022-03-06 07:57:55,938 INFO       starting process
+2022-03-06 07:57:55,939 INFO       Connected to MQTT broker at <ipaddress>:<port> as hamok.
+2022-03-06 07:57:56,647 INFO       Connected to MQTT broker at <ipaddress>:<port> as hamok.
+2022-03-06 07:57:56,648 INFO       Defining a new entity for oekofen_system_ambient.
+2022-03-06 07:57:56,650 INFO       Connected to MQTT broker at <ipaddress>:<port> as hamok.
+2022-03-06 07:57:56,650 DEBUG      Sending {"val": 0.5, "last_update": "2022-03-06T07:57:56"} on homeassistant/sensor/oekofen/oekofen_system_L_ambient/state.
+2022-03-06 07:57:56,650 INFO       Setting the value of entity oekofen_system_ambient to 0.5.
+```
+
+Note that the DEBUG message may not appear.
+
+If everything works well, you should see 2 things appear in Home assistant. You can check this by going to  `Configuration/Devices and Services/Integrations`. The MQTT box should show 1 device and 1 entity more than before.
+
+The device is named 
 

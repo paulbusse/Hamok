@@ -3,3 +3,4 @@
 - send commands back to the oekofen
 - send updates on regular basis
 - send one message with all up
+- disconnect from the terminal
