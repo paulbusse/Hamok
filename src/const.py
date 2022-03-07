@@ -63,6 +63,12 @@ DEFAULTCONFIG = {
     MQTT: {
         MQTTPORT: 1883
     },
+    OEKOFEN: {
+        HOST: None,
+        JSONPORT: None,
+        JSONPWD: None,
+    },
+    MONITOR: [],
     INTERVAL: 60,
     DEVICE: "Oekofen"
 }

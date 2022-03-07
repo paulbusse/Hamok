@@ -4,6 +4,8 @@
 - send updates on regular basis
 - send one message with all updates
 - disconnect from the terminal
+- exit the process properly
+- allow extended clientids 
 
 ## Client hamok has exceeded timeout, disconnecting. MQTT message.
 ```

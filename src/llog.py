@@ -24,3 +24,7 @@ def info(s):
 
 def error(s):
     logger.error(s)
+    
+def fatal(s):
+    logger.fatal(s + " Exiting.")
+    exit()

@@ -4,11 +4,8 @@
 - M: stands for MQTT
 - ÖK: stands for Ökofen
 
-<p float="left">
-  <img src="docs/pics/ha.png" height="50" />
-  <img src="docs/pics/mqtt-logo.svg" height="50" /> 
-  <img src="docs/pics/okofen.png" height="50" />
-</p>
+<img src="/home/homeassistant/Hamok/docs/pics/hamok.png" alt="hamok" style="zoom:50%;" />
+
 
 ## What is this
 
@@ -30,11 +27,14 @@ We are far from done. In the current version (0.1) we are only moving informatio
 - Generate MQTT messages HA can use to create the necessary sensors
 - Update the sensors (only when they change)
 
-There is a todo list (link) and you can always send in requests in the form of a GitHub issue, and I will fit it in. Or, you can contribute.
+## Documentation
 
-## Deployment
+There are several docs, you can read.
 
-Deployment is manual for now and the different steps are listed here (link). An easier deployment is in the todo-list.
+1. The [deployment guide](docs/deploy.md)
+2. A [user guide](docs/usage.md)
+
+I also have a [todo](docs/todo.md) list. That is not in any order and should be converted into issues. But currently, I'm focused on other stuff. If you have ideas, create issues and I may put them on my todo-list. Or, you may contribute yourself.
 
 Enjoy.
 
