@@ -82,7 +82,8 @@ def main():
 
     """ This is temporary. We read a file, this should come from a call
     """
-    while 1:
+    run = True
+    while run:
         ts = datetime.datetime.now().timestamp()
         fdata = oekofen.load()
         
@@ -92,6 +93,8 @@ def main():
             
             if config.get(LIST): 
                 entitylist.dump()
+                run = False
+                continue
 
         nts = datetime.datetime.now().timestamp()
         waittime = max(1, interval - (nts - ts))
