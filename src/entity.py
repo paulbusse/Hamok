@@ -11,11 +11,10 @@ Internally we only maintain a variable value.
 """
 
 import re
-import logging
-
 import config
-from hamqtt import publish_value
 
+import llog
+from hamqtt import publish_value
 from const import (
     COMPONENT,
     
@@ -34,8 +33,6 @@ from const import (
     
     ONOFFFORMATS,
 )
-
-logger = logging.getLogger("default")
 
 """ HA switch statuses"""
 ON = 'ON'
@@ -94,7 +91,7 @@ class BaseEntity(object):
         return self.basetopic + '/state'
     
     def get_okfval(self):
-        logger.error("abstract function 'get_okfval' called.")
+        llog.error("abstract function 'get_okfval' called.")
     
     def set_okfval(self, v):
         if not self._value or v != self._value:
@@ -105,7 +102,7 @@ class BaseEntity(object):
         return self._value
         
     def set_haval(self, v):
-        logger.error("abstract function 'set_haval' called.")
+        llog.error("abstract function 'set_haval' called.")
     
     def control_data(self):
         component = config.get(COMPONENT)

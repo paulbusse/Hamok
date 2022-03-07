@@ -1,3 +1,2 @@
-pyyaml
 paho-mqtt
-urllib
+pyyaml
