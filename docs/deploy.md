@@ -1,6 +1,6 @@
 <img src="pics/hamok.png" style="zoom: 50%;" />
 
-# Deployment
+# Deployment (Version 22.3)
 
 You need:
 
@@ -12,12 +12,12 @@ The deployment is manual at this time. I may simplify this in the future. Gettin
 
 ## Step 1: Download the source
 
-Yep at this point in time you have to download the source. This can be done by cloning the repository or by downloading the zip file from the repository. If you don't know how to do the first, I'll explain the second:
+You can download the source here
 
-1.  Go to the repository: [paulbusse/hamok](https://github.com/paulbusse/Hamok)
-2.  Click on the green button ```code```
-3.  Select ```Download ZIP```
-4.  You should have a file ```hamok-main.zip```. Move it to a directory where you want it to reside and unpack the code there
+* [ZIP file](https://github.com/paulbusse/Hamok/archive/refs/tags/22.3.zip)
+* [Compressed tarball(.tgz)](https://github.com/paulbusse/Hamok/archive/refs/tags/22.3.tar.gz)
+
+You should now have a file `Hamok-22.3.[zip|tar.gz]`in your current directory. Unpack this archive where you want to install Hamök. I install it in the home directory of my `homeassistant`account.
 
 The  rest of this guide assumes that you are located in the top directory of the code.
 
@@ -113,22 +113,40 @@ Now we are ready to launch Hamök.
 
 ```bash
 $ bin/hamok -c ./config.yaml
-2022-03-06 07:57:55,938 INFO       starting process
-2022-03-06 07:57:55,939 INFO       Connected to MQTT broker at <ipaddress>:<port> as hamok.
-2022-03-06 07:57:56,647 INFO       Connected to MQTT broker at <ipaddress>:<port> as hamok.
-2022-03-06 07:57:56,648 INFO       Defining a new entity for oekofen_system_ambient.
-2022-03-06 07:57:56,650 INFO       Connected to MQTT broker at <ipaddress>:<port> as hamok.
-2022-03-06 07:57:56,650 DEBUG      Sending {"val": 0.5, "last_update": "2022-03-06T07:57:56"} on homeassistant/sensor/oekofen/oekofen_system_L_ambient/state.
-2022-03-06 07:57:56,650 INFO       Setting the value of entity oekofen_system_ambient to 0.5.
 ```
 
-Note that the DEBUG message may not appear.
+Now validate syslog in `/var/log`.
+
+You should see messages appear like
+
+```
+Mar  7 18:58:09 ... hamok[14043] INFO     starting process
+Mar  7 18:58:09 ... hamok[14043] INFO     Connected to MQTT broker at 127.0.0.1:1883 as hamok.
+Mar  7 18:58:09 ... hamok[14043] INFO     Connected to MQTT broker at 127.0.0.1:1883 as hamok.
+Mar  7 18:58:09 ... hamok[14043] INFO     Defining a new entity for oekofen_system_ambient.
+Mar  7 18:58:09 ... hamok[14043] INFO     Connected to MQTT broker at 127.0.0.1:1883 as hamok.
+Mar  7 18:58:09 ... hamok[14043] INFO     Setting the value of entity oekofen_system_ambient to 6.800000000000001.
+```
+
+In the `home-assistant.log` file you should see a line
+
+```
+home-assistant.log:2022-03-07 18:58:09 INFO (MainThread) [homeassistant.helpers.entity_registry] Registered new sensor.mqtt entity: sensor.oekofen_system_ambient
+```
 
 If everything works well, you should see 2 things appear in Home assistant. You can check this by going to  `Configuration/Devices and Services/Integrations`. The MQTT box should show 1 device and 1 entity more than before.
 
 The device is named `Oekofen`. The entity is called `sensor.oekofen_system_ambient`. If this is all there. You're ready for the next step.
 
 ## Step 6: Integrating in systemd
+
+First of all you must change `bin/hamok`if you are running this in a python virtual env. Add the line
+
+```bash
+source <virtual env root>/bin/activate
+```
+
+As a second line in that file. (I consider this a bug to be fixed)
 
 Note this step is not really necessary, but ensures that Hamök is restarted at reboot. This is focused on Raspberry OS. On other systems you may want to do different things.
 
