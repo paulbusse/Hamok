@@ -4,7 +4,7 @@
 - M: stands for MQTT
 - ÖK: stands for Ökofen
 
-<img src="/home/homeassistant/Hamok/docs/pics/hamok.png" alt="hamok" style="zoom:50%;" />
+<img src="docs/pics/hamok.png" alt="hamok" style="zoom:50%;" />
 
 
 ## What is this
@@ -19,7 +19,7 @@ Why not build a real HA integration. Well I may do this over time, but this is s
 
 ## Current status
 
-We are far from done. In the current version (0.1) we are only moving information from the heating system and convert them into MQTT messages HA understands.
+We are far from done. In the current version (22.3) we are only moving information from the heating system and convert them into MQTT messages HA understands.
 
 - Connect to the JSON interface of the Ökofen system
 - Translate the information from the Ökofen system into information HA understands
