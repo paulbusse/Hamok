@@ -14,10 +14,10 @@ The deployment is manual at this time. I may simplify this in the future. Gettin
 
 You can download the source here
 
-* [ZIP file](https://github.com/paulbusse/Hamok/archive/refs/tags/22.3.zip)
-* [Compressed tarball(.tgz)](https://github.com/paulbusse/Hamok/archive/refs/tags/22.3.tar.gz)
+* [ZIP file](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.3.zip)
+* [Compressed tarball(.tgz)](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.3.tar.gz)
 
-You should now have a file `Hamok-22.3.[zip|tar.gz]`in your current directory. Unpack this archive where you want to install Hamök. I install it in the home directory of my `homeassistant`account.
+You should now have a file `Hamok-v22.3.[zip|tar.gz]`in your current directory. Unpack this archive where you want to install Hamök. I install it in the home directory of my `homeassistant`account.
 
 The  rest of this guide assumes that you are located in the top directory of the code.
 
