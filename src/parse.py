@@ -1,6 +1,6 @@
 import entity
 import entitylist
-import hamqtt
+from hamqtt import mqttc
 import config
 
 from const import DAEMON, MONITOR, NAME, VAL
@@ -22,7 +22,7 @@ def _parseEntity(systemlabel: str, subname, entityname: str, data: dict):
         entitylist.add(entityKey, ent)
         
         if ent.enabled and daemon:
-            hamqtt.create_entity(ent)
+            mqttc.create_entity(ent)
             
     if ent.enabled and daemon:
         ent.set_okfval(data[VAL])

@@ -14,7 +14,7 @@ import re
 import config
 
 import llog
-from hamqtt import publish_value
+from hamqtt import mqttc
 from const import (
     COMPONENT,
     
@@ -96,7 +96,7 @@ class BaseEntity(object):
     def set_okfval(self, v):
         if not self._value or v != self._value:
             self._value = v
-            publish_value(self)
+            mqttc.publish_value(self)
         
     def get_haval(self):
         return self._value

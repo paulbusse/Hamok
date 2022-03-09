@@ -7,7 +7,7 @@ import sys
 import parse
 import config
 import entitylist
-import hamqtt
+from hamqtt import mqttc
 import oekofen
 
 import llog
@@ -76,7 +76,7 @@ def main():
 
     if config.get(DAEMON):      
         llog.info("starting process")
-        hamqtt.connect()
+        mqttc.connect()
         
     interval = config.get(INTERVAL)
 

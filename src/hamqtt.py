@@ -13,69 +13,69 @@ from const import (
     MQTTPORT,
 )
 
-mqttc = None
+class Mqttc:
 
-flag_connected = 0
+    def __init__(self):
+        self._connected = False
+        self._client = None
 
-def on_connect(client, userdata, flags, rc):
-   global flag_connected
-   flag_connected = 1
+    def on_connect(self, client, userdata, flags, rc):
+        self._connected = True
 
-def on_disconnect(client, userdata, rc):
-   global flag_connected
-   flag_connected = 0
+    def on_disconnect(self, client, userdata, rc):
+        self._connected = False
 
-def connect():
-    global mqttc
-    component = config.get(COMPONENT)
-    cfg = config.get(MQTT)
-    clientid = config.get(CLIENTID)
-    mqtthost = cfg[MQTTHOST]
-    mqttport = cfg[MQTTPORT]
-   
-    mqttc = mqtt.Client(clientid)
-    mqttc._keepalive = 60 #TODO: make this configurable
-    mqttc.on_connect = on_connect
-    mqttc.on_disconnect = on_disconnect
-    mqttc._clean_session = False
+    def connect(self):
+        cfg = config.get(MQTT)
+        clientid = config.get(CLIENTID)
+        mqtthost = cfg[MQTTHOST]
+        mqttport = cfg[MQTTPORT]
     
-    try:
-        mqttc.connect(mqtthost,mqttport)
-    except Exception as e:
-        llog.error("Failed to connect to MQTT broker at {}:{} : {}".format(mqtthost, mqttport, e))
-        exit()
-    
-    llog.info("Connected to MQTT broker at {}:{} as {}.".format(mqtthost, mqttport, clientid))
-    
+        self._client = mqtt.Client(clientid)
+        self._client._keepalive = 60 #TODO: make this configurable
+        self._client.on_connect = self.on_connect
+        self._client.on_disconnect = self.on_disconnect
+        self._client._clean_session = False
+        
+        try:
+            self._client.connect(mqtthost,mqttport)
+            self._client.loop_start()
+        except Exception as e:
+            llog.error("Failed to connect to MQTT broker at {}:{} : {}".format(mqtthost, mqttport, e))
+            exit()
+        
+        llog.info("Connected to MQTT broker at {}:{} as {}.".format(mqtthost, mqttport, clientid))
+        
 
-def create_entity(entity):
-    data = json.dumps(entity.control_data())
-    topic = entity.createtopic
-    try:
-        if not flag_connected:
-            connect()
+    def create_entity(self, entity):
+        data = json.dumps(entity.control_data())
+        topic = entity.createtopic
+        try:
+            if not self._connected:
+                self.connect()
 
-        mqttc.publish(topic, payload=data, qos=1, retain=True)
-    except Exception as e:
-        llog.error("Failed to publish to MQTT topic {}: ".format(topic, e))
-        exit()    
-    llog.info("Defining a new entity for {}.".format(entity.name))
-    
-def publish_value(entity):
-    data = {}
-    v = entity.get_haval()
-    data['val'] = v
-    data['last_update'] = datetime.datetime.now().replace(microsecond=0).isoformat()
-    jdata = json.dumps(data)
-    topic = entity.statetopic
-    try:
-        if not flag_connected:
-            connect()
+            self._client.publish(topic, payload=data, qos=1, retain=True)
+        except Exception as e:
+            llog.error("Failed to publish to MQTT topic {}: ".format(topic, e))
+            exit()    
+        llog.info("Defining a new entity for {}.".format(entity.name))
+        
+    def publish_value(self, entity):
+        data = {}
+        v = entity.get_haval()
+        data['val'] = v
+        data['last_update'] = datetime.datetime.now().replace(microsecond=0).isoformat()
+        jdata = json.dumps(data)
+        topic = entity.statetopic
+        try:
+            if not self._connected:
+                self.connect()
 
-        mqttc.publish(topic, payload=jdata, qos=1, retain=True)
-        llog.debug("Sending {} on {}.".format(jdata, topic))
-    except Exception as e:
-        llog.error("Failed to publish to MQTT topic {}: ".format(topic, e))
-        exit()    
-    llog.info("Setting the value of entity {} to {}.".format(entity.name, v))
-    
+            self._client.publish(topic, payload=jdata, qos=1, retain=True)
+            llog.debug("Sending {} on {}.".format(jdata, topic))
+        except Exception as e:
+            llog.error("Failed to publish to MQTT topic {}: ".format(topic, e))
+            exit()    
+        llog.info("Setting the value of entity {} to {}.".format(entity.name, v))
+        
+mqttc = Mqttc()
