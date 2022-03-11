@@ -1,11 +1,17 @@
-- use attributes for the sensors
 - use unavailability, for all sensors
 - send commands back to the oekofen
-- send updates on regular basis
-- send one message with all updates
-- disconnect from the terminal
+- send updates on regular basis (after a given period)
 - exit the process properly
-- allow extended clientids 
 - more secure usage of MQTT
 - validate that all monitors in the list exist
 - Exec the python in the shell script
+- Is sending the value on state sufficient
+
+# Low priority
+
+- allow extended clientids
+- disconnect from the terminal
+
+# Under discussion
+
+- use attributes for the sensors
