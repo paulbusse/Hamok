@@ -25,7 +25,8 @@ We are far from done. In the current version (22.3) we are only moving informati
 - Translate the information from the Ökofen system into information HA understands
 - Generate MQTT messages HA understands
 - Generate MQTT messages HA can use to create the necessary sensors
-- Update the sensors (only when they change)
+- Update the sensors (only when the values change)
+- Automatically reconnects after the connection with the broker has been lost
 
 ## Documentation
 
@@ -39,4 +40,3 @@ I also have a [todo](docs/todo.md) list. That is not in any order and should be 
 Enjoy.
 
 Paul
-

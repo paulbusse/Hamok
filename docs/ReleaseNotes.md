@@ -1,10 +1,13 @@
 # Release History
 
 ## Next version
+## Functionality
+
+- Hamök reconnects automatically if the communication with the broker is restored after an interruption
 
 ### Bug fixes
 
-- Hamok sometimes disconnects from MQTT
+- The values sent to HA now have one decimal digit.
 
 ## V22.3
 

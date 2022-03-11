@@ -4,8 +4,8 @@
 
 ## Introduction
 
-This integration translates Ökofen heating systems into a set of MQTT 
-entities and devices in a Home Assistant environment. 
+This integration translates Ökofen heating systems into a set of MQTT
+entities and devices in a Home Assistant environment.
 
 Some high level functionality:
 * Monitoring the system
@@ -73,6 +73,8 @@ For more information on these entity types please look at the HA documentation f
 
 Note that you although HA will allow you to change the states of switch, number and select, those changes will not trickle through to the Ökofen system (yet). This is under development.
 
+For sensors with numeric values, like temperatures and power values, the data sent to HA will have one decimal digit, if this is provided by the Ökofen system.
+
 ## Configuration file
 
 The configuration file is a YAML file. Which means that indentation is important. Here is an overview of the configuration file.
@@ -137,7 +139,7 @@ monitor:
 
 **Time between measurements**
 
-You can specify the time between 2 communications with the Ökofen system. The value is the number of seconds between two requests. The default value is 60 seconds. 
+You can specify the time between 2 communications with the Ökofen system. The value is the number of seconds between two requests. The default value is 60 seconds.
 
 The value must be between 1 and  86400 (1 day) and not contain any characters. If an illegal value is configured, the default value is used.
 
@@ -164,7 +166,7 @@ Hamök will connect with the MQTT broker using this ID. It must a valid MQTT Cli
 * Between 1 and 23 characters long
 * Containing only small and capital latin letters and numbers \[a-z]\[A-Z][0-9].
 
-Some servers may support other character sets and other lengths, but that is not supported. 
+Some servers may support other character sets and other lengths, but that is not supported.
 
 Changing the clientid is only needed when you want to support multiple Ökofen systems on the same MQTT broker and HA. You must run one instance of Hamök per Ökofen instance each with a unique clientid.
 
