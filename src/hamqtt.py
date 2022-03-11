@@ -7,7 +7,6 @@ import llog
 import config
 from const import (
     CLIENTID,
-    COMPONENT,
     MQTT,
     MQTTHOST,
     MQTTPORT,

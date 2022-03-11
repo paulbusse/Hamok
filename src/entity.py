@@ -162,14 +162,16 @@ class NumberSensorEntity(BaseEntity):
             self._unit = data[UNIT]
         else:
             self._unit = ""
-            
-        
+                
         if FACTOR in data.keys():
             self._factor = data[FACTOR]
         else:
             self._factor = 1
-            
 
+    def get_haval(self):
+        prec = 1 if self._factor < 1 else 0
+        return "{v:.{p}f}".format(v = self._value, p = prec)
+    
     def set_okfval(self, v):
         super().set_okfval(v * self._factor)
     
