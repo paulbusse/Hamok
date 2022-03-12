@@ -2,4 +2,4 @@
 
 BINDIR=`dirname "$0"`
 
-python3 $BINDIR/../src/hamok.py $@
+exec python3 $BINDIR/../src/hamok.py $@

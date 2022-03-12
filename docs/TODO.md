@@ -4,9 +4,10 @@
 - exit the process properly
 - more secure usage of MQTT
 - validate that all monitors in the list exist
-- Exec the python in the shell script
 - Is sending the value on state sufficient
 - delete monitors in HA that are no longer configured, by deleting the corresponding topics
+- upgrade to Python 3.9 and 3.10.
+- detect if hamok runs in virtual env
 
 ## detect that we are running from a terminal and use devel logger
 
