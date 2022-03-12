@@ -8,6 +8,7 @@
 - delete monitors in HA that are no longer configured, by deleting the corresponding topics
 - upgrade to Python 3.9 and 3.10.
 - detect if hamok runs in virtual env
+- reload config on signal (systemctl?)
 
 ## detect that we are running from a terminal and use devel logger
 
