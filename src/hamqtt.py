@@ -1,10 +1,10 @@
-import os
 import json
-import datetime
+import time
 import paho.mqtt.client as mqtt
 
 import llog
 import config
+
 from const import (
     CLIENTID,
     MQTT,
@@ -15,19 +15,33 @@ from const import (
 class Mqttc:
 
     def __init__(self):
-        self._connected = False
+        """
+        _connected:
+            0 -> Not connected
+            1 -> succesfully connected
+            2 -> connection failed
+        """
+        self._connected = 0
         self._client = None
+        self._cmdtopics = dict()
 
     def on_connect(self, client, userdata, flags, rc):
-        self._connected = True
+        if rc != 0:
+            self._connected = 2
+            llog.error("Connecting to broker returned {}.".format(rc))
+        else:
+            self._connected = 1
 
     def on_disconnect(self, client, userdata, rc):
-        self._connected = False
+        self._connected = 0
 
     def on_message(self, client, userdata, message):
         payload = message.payload.decode('utf-8')
         topic = message.topic
         llog.info("Received {} from {}".format(payload, topic))
+        entity = self._cmdtopics[topic]
+        entity.set_haval(payload)
+
 
     def connect(self):
         cfg = config.get(MQTT)
@@ -43,11 +57,14 @@ class Mqttc:
         self._client._clean_session = False
 
         try:
-            self._client.connect(mqtthost,mqttport)
+            ret = self._client.connect(mqtthost,mqttport)
             self._client.loop_start()
         except Exception as e:
             llog.error("Failed to connect to MQTT broker at {}:{} : {}".format(mqtthost, mqttport, e))
             exit()
+
+        while not self._connected:
+            time.sleep(0.1)
 
         llog.info("Connected to MQTT broker at {}:{} as {}.".format(mqtthost, mqttport, clientid))
 
@@ -58,25 +75,41 @@ class Mqttc:
         try:
             if not self._connected:
                 self.connect()
-
-            self._client.publish(topic, payload=data, qos=1, retain=True)
+            ret = self._client.publish(topic, payload=data, qos=1, retain=True)
         except Exception as e:
             llog.error("Failed to publish to MQTT topic {}: ".format(topic, e))
             exit()
-        llog.info("Defining a new entity for {}.".format(entity.name))
+        llog.info("Defining a new entity for {}[Mid:{}].".format(entity.name, ret.mid))
 
-    def publish_value(self, entity):
-        v = entity.get_haval()
-        topic = entity.statetopic
+        ct = entity.cmdtopic
+        if ct:
+            self._cmdtopics[ct] = entity
+
+
+    def publish_value(self, topic, v):
         try:
             if not self._connected:
                 self.connect()
 
-            self._client.publish(topic, payload=v, qos=1, retain=True)
-            llog.debug("Sending {} on {}.".format(v, topic))
+            ret = self._client.publish(topic, payload=v, qos=1, retain=True)
         except Exception as e:
-            llog.error("Failed to publish to MQTT topic {}: ".format(topic, e))
-            exit()
-        llog.info("Setting the value of entity {} to {}.".format(entity.name, v))
+            llog.error(f"Failed to publish to MQTT topic {topic}: {e}")
+            return False
+        llog.info(f"Sending {v} on {topic}[Mid:{ret.mid}].")
+        return True
 
-mqttc = Mqttc()
+    def subscribe(self):
+        topics = self._cmdtopics
+        pmtopics = list(map( lambda x: (x,0), topics))
+        try:
+            if not self._connected:
+                self.connect()
+
+            ret = self._client.subscribe(pmtopics)
+        except Exception as e:
+            llog.error("Failed to subscribe to topics {}: ".format(topics, e))
+            exit()
+        llog.info("Subscribing to topics: {}[Mid:{}].".format(list(topics.keys()), ret[1]))
+
+
+hamqttc = Mqttc()

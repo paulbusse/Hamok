@@ -1,9 +1,9 @@
 import entity
 import entitylist
-from hamqtt import mqttc
+from hamqtt import hamqttc
 import config
 
-from const import DAEMON, MONITOR, NAME, VAL
+from const import MONITOR, NAME, VAL
 
 def _parse_entity(systemlabel: str, subname, entityname: str, data: dict):
     """
@@ -11,20 +11,14 @@ def _parse_entity(systemlabel: str, subname, entityname: str, data: dict):
     We are actually only interested in the ambient temperature
     """
 
-    daemon = config.get(DAEMON)
     entityKey = systemlabel + "." + entityname
     ent = entitylist.get(entityKey)
     if ent is None:
         ent = entity.factory(subname, systemlabel, entityname, data)
-
         ent.enabled = entityKey in config.get(MONITOR)
-
         entitylist.add(entityKey, ent)
 
-        if ent.enabled and daemon:
-            mqttc.create_entity(ent)
-
-    if ent.enabled and daemon:
+    if ent.enabled:
         ent.set_okfval(data[VAL])
 
 

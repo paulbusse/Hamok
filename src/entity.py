@@ -7,15 +7,19 @@ is enabled it is published on the MQTT topic.
 haval is set when we retrieve a value from MQTT. That value is forwarded
 to the heating system.
 
-Internally we only maintain a variable value.
+Internally we only maintain the HA value.
 """
 
 import re
 import config
 
-import llog
-from hamqtt import mqttc
+from hamqtt import hamqttc
+from oekofen import oekofenc
+from jobs import jobhandler
+
 from const import (
+    ARGUMENTS,
+    CALLBACK,
     COMPONENT,
 
     BINARYSENSOR,
@@ -61,6 +65,9 @@ class BaseEntity(object):
         self._enabled = False
         self._value = None
 
+    def __repr__(self):
+        return self._entityname
+
     @property
     def name(self):
         return self._entityname
@@ -90,19 +97,23 @@ class BaseEntity(object):
     def statetopic(self):
         return self.basetopic + '/state'
 
-    def get_okfval(self):
-        llog.error("abstract function 'get_okfval' called.")
+    @property
+    def cmdtopic(self):
+        return None
+
+    @property
+    def okfname(self):
+        return self._oekofenname
 
     def set_okfval(self, v):
-        if not self._value or v != self._value:
+        if not self._value:
             self._value = v
-            mqttc.publish_value(self)
+        elif v != self._value:
+            self._value = v
+            hamqttc.publish_value(self.statetopic, self.get_haval())
 
     def get_haval(self):
         return self._value
-
-    def set_haval(self, v):
-        llog.error("abstract function 'set_haval' called.")
 
     def control_data(self):
         component = config.get(COMPONENT)
@@ -112,7 +123,7 @@ class BaseEntity(object):
             'device': {
                 'manufacturer': 'Ökofen',
                 'identifiers': ["123456789"], #TODO: find real identifier
-                'name': config.get(COMPONENT),
+                'name': component,
                 'sw_version': 'v4.00b', #TODO: find this from system
             },
             # device_class: skipped for now
@@ -169,10 +180,10 @@ class NumberSensorEntity(BaseEntity):
 
     def get_haval(self):
         prec = 1 if self._factor < 1 else 0
-        return "{v:.{p}f}".format(v = self._value, p = prec)
+        return f"{self._value:.{prec}f}"
 
     def set_okfval(self, v):
-        super().set_okfval(v * self._factor)
+        super().set_okfval(float(v) * self._factor)
 
     def control_data(self):
         data = super().control_data()
@@ -186,12 +197,29 @@ class ReadWriteEntity(BaseEntity):
         super().__init__(entitytype, systemname, attribute, systemlabel, data)
 
     def set_haval(self, v):
-        self._value = v
+        def do_set_haval(okfname, val, oldval):
+            ret = oekofenc.publish_value(okfname, val)
+            if ret:
+                hamqttc.publish_value(self.statetopic, self.get_haval())
+            else:
+                self.set_okfval(oldval)
+
+        if v != self._value:
+            oldval = self.get_okfval()
+            self._value = v
+            jobhandler.schedule({
+                CALLBACK: do_set_haval,
+                ARGUMENTS: [self._oekofenname, self.get_okfval(), oldval]
+            })
 
     def control_data(self):
         data = super().control_data()
         data['command_topic'] = '~/cmd'
         return data
+
+    @property
+    def cmdtopic(self):
+        return self.basetopic + '/cmd'
 
 
 class SwitchEntity(BinarySensorEntity, ReadWriteEntity):
@@ -207,7 +235,7 @@ class SelectEntity(SelectSensorEntity, ReadWriteEntity):
         super().__init__(entitytype, systemname, attribute, systemlabel, data)
 
     def get_okfval(self):
-        return self.options.index(self._value)
+        return f"{self.options.index(self._value)}"
 
     def control_data(self):
         data = super().control_data()
@@ -227,7 +255,10 @@ class NumberEntity(NumberSensorEntity, ReadWriteEntity):
             self._max = ""
 
     def get_okfval(self):
-        return self._value / self._factor
+        return f"{self._value / self._factor:.0f}"
+
+    def set_haval(self, v):
+        return super().set_haval(float(v))
 
     def control_data(self):
         data = super().control_data()
