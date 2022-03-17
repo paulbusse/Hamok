@@ -1,7 +1,8 @@
 import sys
 import logging
+import enum
 
-""" 
+"""
 Keys from the public configuration file
 """
 MONITOR = "monitor"
@@ -74,6 +75,18 @@ DEFAULTCONFIG = {
 }
 
 
+""" JOB IDS"""
+JOBID = "jobid"
+ENTITY = "entity"
+PAYLOAD = "payload"
+CALLBACK = "callback"
+ARGUMENTS = "arguments"
+class JobID(enum.Enum):
+    ALL = 1
+    UPDATE = 2
+    SCHEDULE = 3
+
+
 """ LOGGING CONFIG """
 LOGGING = {
     'version': 1,
@@ -105,17 +118,17 @@ LOGGING = {
         'devel': {
             'handlers': ['sys-logger0', 'stderr'],
             'level': logging.DEBUG,
-            'propagate': True, 
+            'propagate': True,
         },
         'default': {
             'handlers': ['sys-logger0'],
             'level': logging.INFO,
-            'propagate': True, 
+            'propagate': True,
         },
         'debug': {
             'handlers': ['sys-logger0'],
             'level': logging.DEBUG,
-            'propagate': True, 
+            'propagate': True,
         },
     }
 }

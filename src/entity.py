@@ -7,17 +7,21 @@ is enabled it is published on the MQTT topic.
 haval is set when we retrieve a value from MQTT. That value is forwarded
 to the heating system.
 
-Internally we only maintain a variable value.
+Internally we only maintain the HA value.
 """
 
 import re
 import config
 
-import llog
-from hamqtt import publish_value
+from hamqtt import hamqttc
+from oekofen import oekofenc
+from jobs import jobhandler
+
 from const import (
+    ARGUMENTS,
+    CALLBACK,
     COMPONENT,
-    
+
     BINARYSENSOR,
     MAXIMUM,
     MINIMUM,
@@ -25,12 +29,12 @@ from const import (
     SELECT,
     SENSOR,
     SWITCH,
-    
+
     FACTOR,
     FORMAT,
     TOPICROOT,
     UNIT,
-    
+
     ONOFFFORMATS,
 )
 
@@ -40,70 +44,77 @@ OFF = 'OFF'
 
 class BaseEntity(object):
     """ Base class for all entities """
-    
+
     def __init__(self, entitytype: str, systemname: str, attribute: str, systemlabel: str, data):
         """ You cannot use any of the derived functions in this function """
         component = config.get(COMPONENT)
-        
+
         if attribute[0:2] == "L_":
             _friendly = attribute[2:]
         else:
             _friendly = attribute
-        
+
         en = component + "_" + systemname + "_" + _friendly
         en = en.lower()
         en = re.sub(r"\W", '_', en)
-        
+
         self._hatype = entitytype
         self._id = component + "_" + systemlabel + "_" + attribute
         self._entityname = en
         self._oekofenname = systemlabel + "." + attribute
         self._enabled = False
         self._value = None
-        
+
+    def __repr__(self):
+        return self._entityname
+
     @property
     def name(self):
         return self._entityname
-    
+
     @property
     def hatype(self):
         return self._hatype
-    
+
     @property
     def enabled(self):
         return self._enabled
-    
+
     @enabled.setter
     def enabled(self, e):
         self._enabled = e;
-    
+
     @property
     def basetopic(self):
         component = config.get(COMPONENT)
         return TOPICROOT + self.hatype + "/" + component + "/" + self._id
-        
+
     @property
     def createtopic(self):
         return self.basetopic + '/config'
-    
+
     @property
     def statetopic(self):
         return self.basetopic + '/state'
-    
-    def get_okfval(self):
-        llog.error("abstract function 'get_okfval' called.")
-    
+
+    @property
+    def cmdtopic(self):
+        return None
+
+    @property
+    def okfname(self):
+        return self._oekofenname
+
     def set_okfval(self, v):
-        if not self._value or v != self._value:
+        if not self._value:
             self._value = v
-            publish_value(self)
-        
+        elif v != self._value:
+            self._value = v
+            hamqttc.publish_value(self.statetopic, self.get_haval())
+
     def get_haval(self):
         return self._value
-        
-    def set_haval(self, v):
-        llog.error("abstract function 'set_haval' called.")
-    
+
     def control_data(self):
         component = config.get(COMPONENT)
         return {
@@ -112,20 +123,19 @@ class BaseEntity(object):
             'device': {
                 'manufacturer': 'Ökofen',
                 'identifiers': ["123456789"], #TODO: find real identifier
-                'name': config.get(COMPONENT),
+                'name': component,
                 'sw_version': 'v4.00b', #TODO: find this from system
             },
             # device_class: skipped for now
             'name': self._entityname,
             'unique_id': self._id,
-            'value_template': '{{value_json.val}}'
         }
-        
+
 
 class BinarySensorEntity(BaseEntity):
     def __init__(self, entitytype: str, systemname: str, attribute: str, systemlabel: str, data ):
         super().__init__(entitytype, systemname, attribute, systemlabel, data)
-    
+
     def set_okfval(self, v):
         hav = ON if v == 1 else OFF
         super().set_okfval(hav)
@@ -135,63 +145,82 @@ class BinarySensorEntity(BaseEntity):
         data['payload_on'] = ON
         data['payload_off'] = OFF
         return data
-            
+
 
 class SelectSensorEntity(BaseEntity):
-    def __init__(self, entitytype: str, systemname: str, attribute: str, systemlabel: str, data ):    
+    def __init__(self, entitytype: str, systemname: str, attribute: str, systemlabel: str, data ):
         super().__init__(entitytype, systemname, attribute, systemlabel, data)
         self._options = self._split(data[FORMAT])
-    
+
     def set_okfval(self, v):
         super().set_okfval(self._options[v])
-    
+
     @property
     def options(self):
         return self._options
-    
+
     def _split(self, format: str):
         a = re.split(r'[|:]', format)
         return a[1::2]
-    
-    
+
+
 class NumberSensorEntity(BaseEntity):
-    def __init__(self, entitytype: str, systemname: str, attribute: str, systemlabel: str, data ):    
+    def __init__(self, entitytype: str, systemname: str, attribute: str, systemlabel: str, data ):
         super().__init__(entitytype, systemname, attribute, systemlabel, data)
-        
+
         if UNIT in data.keys():
             self._unit = data[UNIT]
         else:
             self._unit = ""
-            
-        
+
         if FACTOR in data.keys():
             self._factor = data[FACTOR]
         else:
             self._factor = 1
-            
+
+    def get_haval(self):
+        prec = 1 if self._factor < 1 else 0
+        return f"{self._value:.{prec}f}"
 
     def set_okfval(self, v):
-        super().set_okfval(v * self._factor)
-    
+        super().set_okfval(float(v) * self._factor)
+
     def control_data(self):
         data = super().control_data()
         if self._unit:
             data['unit_of_measurement'] = self._unit
         return data
-     
-        
+
+
 class ReadWriteEntity(BaseEntity):
-    def __init__(self, entitytype: str, systemname: str, attribute: str, systemlabel: str, data ):    
+    def __init__(self, entitytype: str, systemname: str, attribute: str, systemlabel: str, data ):
         super().__init__(entitytype, systemname, attribute, systemlabel, data)
-    
+
     def set_haval(self, v):
-        self._value = v
-    
+        def do_set_haval(okfname, val, oldval):
+            ret = oekofenc.publish_value(okfname, val)
+            if ret:
+                hamqttc.publish_value(self.statetopic, self.get_haval())
+            else:
+                self.set_okfval(oldval)
+
+        if v != self._value:
+            oldval = self.get_okfval()
+            self._value = v
+            jobhandler.schedule({
+                CALLBACK: do_set_haval,
+                ARGUMENTS: [self._oekofenname, self.get_okfval(), oldval]
+            })
+
     def control_data(self):
         data = super().control_data()
         data['command_topic'] = '~/cmd'
         return data
-    
+
+    @property
+    def cmdtopic(self):
+        return self.basetopic + '/cmd'
+
 
 class SwitchEntity(BinarySensorEntity, ReadWriteEntity):
     def __init__(self, entitytype: str, systemname: str, attribute: str, systemlabel: str, data ):
@@ -206,18 +235,18 @@ class SelectEntity(SelectSensorEntity, ReadWriteEntity):
         super().__init__(entitytype, systemname, attribute, systemlabel, data)
 
     def get_okfval(self):
-        return self.options.index(self._value)
-    
+        return f"{self.options.index(self._value)}"
+
     def control_data(self):
         data = super().control_data()
         data['options'] = self._options
         return data
-    
+
 
 class NumberEntity(NumberSensorEntity, ReadWriteEntity):
     def __init__(self, entitytype: str, systemname: str, attribute: str, systemlabel: str, data ):
         super().__init__(entitytype, systemname, attribute, systemlabel, data)
-        
+
         if MINIMUM in data.keys():
             self._min = data[MINIMUM] * self._factor
             self._max = data[MAXIMUM] * self._factor
@@ -226,29 +255,32 @@ class NumberEntity(NumberSensorEntity, ReadWriteEntity):
             self._max = ""
 
     def get_okfval(self):
-        return self._value / self._factor
-    
+        return f"{self._value / self._factor:.0f}"
+
+    def set_haval(self, v):
+        return super().set_haval(float(v))
+
     def control_data(self):
         data = super().control_data()
         if self._min:
             data['min'] = self._min
             data['max'] = self._max
         return data
-      
-   
+
+
 def factory(subsysname, subsyslabel, entityname, data: dict):
     readonly = False
     binary = False
     select = False
     if entityname[0:2] == 'L_':
         readonly = True
-    
+
     if FORMAT in data.keys():
         if data[FORMAT] in ONOFFFORMATS:
             binary = True
         else:
             select = True
-    
+
     if readonly:
         if binary:
             ent = BinarySensorEntity(BINARYSENSOR, subsysname, entityname, subsyslabel,  data)

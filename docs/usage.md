@@ -1,11 +1,13 @@
 # User documentation
 
+Version: 22.4
+
 [TOC]
 
 ## Introduction
 
-This integration translates Ökofen heating systems into a set of MQTT 
-entities and devices in a Home Assistant environment. 
+This integration translates Ökofen heating systems into a set of MQTT
+entities and devices in a Home Assistant environment.
 
 Some high level functionality:
 * Monitoring the system
@@ -15,10 +17,10 @@ Some high level functionality:
 
 Command line options
 
-| option                    | description                                                  |
+| Option                    | Description                                                  |
 | ------------------------- | ------------------------------------------------------------ |
 | `-h` or `--help`          | prints a help page with a short description of each of the options |
-| `-c` or `--config` <file> | Specify the configfile. This option is mandatory except with the help option |
+| `-c` or `--config` <file> | Specify the configuration file. This option is mandatory except with the help option |
 | `-p` or `--print`         | Prints the configuration that will be used. It includes all the defaults. This option is there for debugging purposes. The process will exit after the printing the configuration. |
 | `-l` or `--list`          | Prints a list of all available entities for your system and exits. See below in the configuration section how this is useful. |
 
@@ -72,6 +74,52 @@ We use the following entity types:
 For more information on these entity types please look at the HA documentation for [MQTT discovery](https://www.home-assistant.io/docs/mqtt/discovery/)
 
 Note that you although HA will allow you to change the states of switch, number and select, those changes will not trickle through to the Ökofen system (yet). This is under development.
+
+For sensors with numeric values, like temperatures and power values, the data sent to HA will have one decimal digit, if this is provided by the Ökofen system.
+
+## Naming
+
+### HA Entity names
+
+The entity name defined by Hamök and sent to HA to create new entities consists of 3 components, joined by an underscore :
+
+* the device name, as taken from the [configuration file](#configuration-file). The name is taken as it stands. If this causes HA to refuse the name, that is for you to fix.
+* the sub-system name. The Ökofen system exists out of a set of sub-systems each with a name determined by Ökofen. These Ökofen names read `hk1`or `pe1`. You can name these sub-systems yourself in the Ökofen interface e.g. `hk1` may become `ground floor`. By preference the name entered by the user will be taken, if not we take the Ökofen name. In the user provided name all characters. All characters that are not letters or numbers, so also spaces, will be replaced by '_' (underscores)
+* The name of the value. Ökofen indicates read-only values by preceding them by 'L_'. Hamök removes that prefix.
+
+An example of HA entity name is then
+
+```
+oekofen_ground_floor_roomtemp_act
+```
+
+### MQTT Topics
+
+We follow the HA guidelines here. 
+
+MQTT topic names have 4 components
+
+* the first is `homeassistant`
+* the second is the entity type. This is explained in the section [Which values you want to monitor](#which-values-you-want-to-monitor).
+* the third is the HA entity name as described above.
+* the fourth is the message type:
+  * `config`: contains the latest definition of the HA entity. Messages here are send in retain mode
+  * `state`: contains the latest value for the entity. Messages here are send in retain mode
+  * `cmd`: is the topic where HA publishes changes to the Hamök on.
+
+```
+homeassistant/switch/oekofen/oekofen_ww1_heat_once/state
+```
+
+## HA configuration
+
+We try to do as much as we can in Hamök to avoid changes in HA. However, we believe that Home Assistant is good at what it does. So, whatever that can be done in HA, should be done in HA. I'm well aware that Hamök is not where it needs to be on this point. Improvements can be expected in the future.
+
+Some remarks
+
+* In the MQTT configuration, we do not care about birth and will messages. Note that other MQTT integrations may care.
+* You can assign friendly names to your entity, we do not override them from Hamök.
+* If you want to set the area, you can do this on the device instead of every individual entity.
 
 ## Configuration file
 
@@ -137,7 +185,7 @@ monitor:
 
 **Time between measurements**
 
-You can specify the time between 2 communications with the Ökofen system. The value is the number of seconds between two requests. The default value is 60 seconds. 
+You can specify the time between 2 communications with the Ökofen system. The value is the number of seconds between two requests. The default value is 60 seconds.
 
 The value must be between 1 and  86400 (1 day) and not contain any characters. If an illegal value is configured, the default value is used.
 
@@ -164,7 +212,7 @@ Hamök will connect with the MQTT broker using this ID. It must a valid MQTT Cli
 * Between 1 and 23 characters long
 * Containing only small and capital latin letters and numbers \[a-z]\[A-Z][0-9].
 
-Some servers may support other character sets and other lengths, but that is not supported. 
+Some servers may support other character sets and other lengths, but that is not supported.
 
 Changing the clientid is only needed when you want to support multiple Ökofen systems on the same MQTT broker and HA. You must run one instance of Hamök per Ökofen instance each with a unique clientid.
 

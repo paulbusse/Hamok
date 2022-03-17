@@ -1,21 +1,40 @@
-- use attributes for the sensors
 - use unavailability, for all sensors
-- send commands back to the oekofen
-- send updates on regular basis
-- send one message with all updates
-- disconnect from the terminal
+- send updates on regular basis (after a given period)
 - exit the process properly
-- allow extended clientids 
+- more secure usage of MQTT
+- validate that all monitors in the list exist
+- delete monitors in HA that are no longer configured, by deleting the corresponding topics
+- upgrade to Python 3.9 and 3.10.
+- detect if hamok runs in virtual env
+- reload config on signal (systemctl?)
+- Validate return codes in callback on connect
+- Validate return codes in callback on publish
+- Validate return codes in callback on subscribe
+- refactoring: parse.py should be integrated in oekofen.py
+- refactoring: entity.factory: oekofen specific part should go to oekofen.py
+- set device class for HA devices
+- refactoring: use f-strings everywhere
+- refactoring: remove dependency of hamqtt on entity
+- all jobs should be created using schedule
+- on re_connect publish all the available values
+- normalize the COMPONENT Name from the configuration file
+- sending birth and will messages
+- create all entities disabled
 
-## Client hamok has exceeded timeout, disconnecting. MQTT message.
-```
-Mar  6 12:21:54 Nukkie mosquitto.mosquitto[120444]: 1646565714: New connection from 127.0.0.1:53847 on port 1883.
-Mar  6 12:21:54 Nukkie mosquitto.mosquitto[120444]: 1646565714: New client connected from 127.0.0.1:53847 as hamok (p2, c0, k60).
-Mar  6 12:21:54 Nukkie hamok[211496] INFO     Connected to MQTT broker at 127.0.1.1:1883 as hamok.
-Mar  6 12:21:55 Nukkie mosquitto.mosquitto[120444]: 1646565715: Client hamok closed its connection.
-Mar  6 12:21:55 Nukkie mosquitto.mosquitto[120444]: 1646565715: New connection from 127.0.0.1:49189 on port 1883.
-Mar  6 12:21:55 Nukkie mosquitto.mosquitto[120444]: 1646565715: New client connected from 127.0.0.1:49189 as hamok (p2, c0, k60).
-Mar  6 12:21:55 Nukkie hamok[211496] INFO     Connected to MQTT broker at 127.0.1.1:1883 as hamok.
-Mar  6 12:21:55 Nukkie hamok[211496] INFO     Defining a new entity for oekofen_system_ambient.
-Mar  6 12:21:55 Nukkie mosquitto.mosquitto[120444]: 1646565715: Client hamok closed its connection.
-```
+## detect that we are running from a terminal and use devel logger
+
+Subtask: the 'Devel' logger cannot be set in the configuration file and becomes an illegal value.
+
+# Low priority
+
+- allow extended clientids
+
+# Under discussion
+
+## use attributes for the sensors
+
+We need a use case
+
+## disconnect from the terminal
+
+As we start through systemd, it is running in the background. When started from terminal we probably want to it run connected to the terminal

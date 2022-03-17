@@ -1,4 +1,5 @@
 from entity import BaseEntity
+from hamqtt import hamqttc
 
 _entities = {}
 
@@ -10,7 +11,7 @@ def get(key: str) -> BaseEntity:
 
 def add(key: str, ent: BaseEntity) -> None:
     _entities[key] = ent
-    
+
 def dump():
     for key in _entities.keys():
         entitytype = _entities[key].hatype
@@ -19,3 +20,10 @@ def dump():
         else:
             enabled = 'disabled'
         print("{} [{}/{}]".format(key, entitytype, enabled))
+
+
+def create_entities():
+    for ent in _entities.values():
+        if ent.enabled:
+            hamqttc.create_entity(ent)
+            hamqttc.publish_value(ent.statetopic, ent.get_haval())
