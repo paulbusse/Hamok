@@ -1,6 +1,6 @@
 <img src="pics/hamok.png" style="zoom: 50%;" />
 
-# Deployment (Version 22.3)
+# Deployment (Version 22.4)
 
 You need:
 
@@ -10,14 +10,18 @@ You need:
 
 The deployment is manual at this time. I may simplify this in the future. Getting the thing running was my first priority.
 
+## Upgrade vs Fresh install
+
+If you are upgrading you can skip steps 3, 4 and 6. You may want to look at step 7 as new functionality was added. But step 7 can be skipped as well.
+
 ## Step 1: Download the source
 
 You can download the source here
 
-* [ZIP file](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.3.zip)
-* [Compressed tarball(.tgz)](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.3.tar.gz)
+* [ZIP file](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.4.zip)
+* [Compressed tarball(.tgz)](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.4.tar.gz)
 
-You should now have a file `Hamok-v22.3.[zip|tar.gz]`in your current directory. Unpack this archive where you want to install Hamök. I install it in the home directory of my `homeassistant`account.
+You should now have a file `Hamok-v22.4.[zip|tar.gz]`in your current directory. Unpack this archive where you want to install Hamök. I install it in the home directory of my `homeassistant`account.
 
 The  rest of this guide assumes that you are located in the top directory of the code.
 
@@ -27,9 +31,11 @@ $ cd Hamok
 
 ## Step 2: Configure the MQTT broker
 
-You are free to use whatever broker you like. It never hurt anyone to read the manual. We are using QoS 1 messages. Make sure that the messages that are sent persist. 
+You are free to use whatever broker you like. It never hurt anyone to read the manual. We are using QoS 1 messages. Make sure that the messages that are sent persist.
 
 Hamök always uses the same clientid to connect to the broker and should be able to pick up messages that were send while it was down. This also requires that the broker must be set up to forget about Hamök should you no longer need it.
+
+
 
 ## Step 3: Configure Hamök
 
@@ -83,7 +89,7 @@ For other configuration settings please read the [user guide](usage.md)
 
 ## Step 4: Configure Home Assistant
 
-This is the simplest of steps. 
+This is the simplest of steps.
 
 * Go to `Configuration/Devices and Services/Integrations`
 * Select MQTT.
@@ -120,12 +126,15 @@ Now validate syslog in `/var/log`.
 You should see messages appear like
 
 ```
-Mar  7 18:58:09 ... hamok[14043] INFO     starting process
-Mar  7 18:58:09 ... hamok[14043] INFO     Connected to MQTT broker at 127.0.0.1:1883 as hamok.
-Mar  7 18:58:09 ... hamok[14043] INFO     Connected to MQTT broker at 127.0.0.1:1883 as hamok.
-Mar  7 18:58:09 ... hamok[14043] INFO     Defining a new entity for oekofen_system_ambient.
-Mar  7 18:58:09 ... hamok[14043] INFO     Connected to MQTT broker at 127.0.0.1:1883 as hamok.
-Mar  7 18:58:09 ... hamok[14043] INFO     Setting the value of entity oekofen_system_ambient to 6.800000000000001.
+Mar 16 16:07:31 <host> hamok[115318] INFO     starting process
+Mar 16 16:07:31 <host> hamok[115318] INFO     Connected to MQTT broker at <ip-address>:<port> as hamok.
+Mar 16 16:07:31 <host> hamok[115318] INFO     Defining a new entity for oekofen_system_ambient[Mid:1].
+Mar 16 16:07:31 <host> hamok[115318] INFO     Sending 14.1 on homeassistant/sensor/oekofen/oekofen_system_L_ambient/state[Mid:2].
+Mar 16 16:07:31 <host> hamok[115318] INFO     Defining a new entity for oekofen_verwarming_temp_vacation[Mid:5].
+Mar 16 16:07:31 <host> hamok[115318] INFO     Sending 15.0 on homeassistant/number/oekofen/oekofen_hk1_temp_vacation/state[Mid:6].
+Mar 16 16:07:31 <host> hamok[115318] INFO     Defining a new entity for oekofen_warm_water_heat_once[Mid:7].
+Mar 16 16:07:31 <host> hamok[115318] INFO     Sending OFF on homeassistant/switch/oekofen/oekofen_ww1_heat_once/state[Mid:8].
+Mar 16 16:07:31 <host> hamok[115318] INFO     Subscribing to topics: ['homeassistant/number/oekofen/oekofen_hk1_temp_vacation/cmd', 'homeassistant/switch/oekofen/oekofen_ww1_heat_once/cmd', 'homeassistant/select/oekofen/oekofen_pe1_mode/cmd'][Mid:11].
 ```
 
 In the `home-assistant.log` file you should see a line
@@ -189,6 +198,3 @@ To really validate if this works properly you should reboot your system and vali
 ## Step 7: Add entities
 
 Now is a good time to read the [manual](usage.md) and add a few entities.
-
-
-

@@ -1,5 +1,4 @@
 - use unavailability, for all sensors
--
 - send updates on regular basis (after a given period)
 - exit the process properly
 - more secure usage of MQTT
@@ -18,6 +17,9 @@
 - refactoring: remove dependency of hamqtt on entity
 - all jobs should be created using schedule
 - on re_connect publish all the available values
+- normalize the COMPONENT Name from the configuration file
+- sending birth and will messages
+- create all entities disabled
 
 ## detect that we are running from a terminal and use devel logger
 

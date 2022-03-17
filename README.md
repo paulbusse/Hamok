@@ -11,24 +11,20 @@
 
 It is an integration of Ökofen Pellet heating systems in Home Assistant using MQTT.
 
-The Ökofen systems can differ largely and the number of sensors that can be created in HA may be dramatic and unuseful.
+Why not build a real HA integration. Well I may do this over time, but this is something I know and I wanted to be quick. This is not my first MQTT ride (I don't claim to be an expert) but it would be my first HA integration and this is quite a complex one. Especially, if you want the same functionality as I want to put into this little monster.
 
-Hamok tries to give you some control over this.
+## Functionality
 
-Why not build a real HA integration. Well I may do this over time, but this is something I know and I wanted to be quick.
+The Ökofen systems can differ largely and the number of sensors that can be created in HA may be large (127 in my case) and not all of them are useful to monitor, it is unclear what they mean or they are just permanently 0. Hamök gives you control over this.
 
-## Current status
+Hamök connects to the JSON interface of the Ökofen system and translates the information it receives from that interface
 
-We are far from done. In the current version (22.3) we are only moving information from the heating system and convert them into MQTT messages HA understands.
+*  MQTT messages that allows HA to create a device and a set of sensors
+* It regularly connects to the JSON interface and sends updates to HA whenever the value changes. Depending on the monitored value we use [binary sensors](https://www.home-assistant.io/integrations/binary_sensor.mqtt/), or regular [sensors](https://www.home-assistant.io/integrations/sensor.mqtt/)
 
-- Connect to the JSON interface of the Ökofen system
-- Translate the information from the Ökofen system into information HA understands
-- Generate MQTT messages HA understands
-- Generate MQTT messages HA can use to create the necessary sensors
-- Update the sensors (only when the values change)
-- Automatically reconnects after the connection with the broker has been lost
+- If the values can be set on the Ökofen system, you can change them in HA. The entities that can be changed are configured in such a way that you can only set acceptable values. Here we use [select](https://www.home-assistant.io/integrations/select.mqtt/), [numbers](https://www.home-assistant.io/integrations/number.mqtt/), or [switches](https://www.home-assistant.io/integrations/switch.mqtt/)
 
-## Documentation
+## Further documentation
 
 There are several docs, you can read.
 
