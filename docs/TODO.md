@@ -1,3 +1,5 @@
+# Todo list
+
 - use unavailability, for all sensors
 - send updates on regular basis (after a given period)
 - exit the process properly
@@ -18,8 +20,6 @@
 - all jobs should be created using schedule
 - on re_connect publish all the available values
 - normalize the COMPONENT Name from the configuration file
-- sending birth and will messages
-- create all entities disabled
 
 ## detect that we are running from a terminal and use devel logger
 
@@ -28,13 +28,23 @@ Subtask: the 'Devel' logger cannot be set in the configuration file and becomes 
 # Low priority
 
 - allow extended clientids
+- sending birth and will messages
 
 # Under discussion
 
-## use attributes for the sensors
+## Needs a valid use case
 
-We need a use case
-
+- use attributes for the sensors
+- sending birth and will messages
 ## disconnect from the terminal
 
 As we start through systemd, it is running in the background. When started from terminal we probably want to it run connected to the terminal
+
+# create all entities disabled
+
+HA allows entities to be disabled. We could create all entities disabled and the user should enable them in HA
+
+- PRO: we do not need to maintain the `monitor` list in the configuration file
+- CONTRA: we will be sending a lot of useless information
+
+Solution: make this configurable?

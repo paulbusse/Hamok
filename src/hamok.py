@@ -13,7 +13,6 @@ from jobs import jobhandler
 import llog
 
 from const import (
-    DAEMON,
     INTERVAL,
     LIST,
     PRINT,
@@ -41,7 +40,6 @@ def _handleOptions():
         for opt, val in arguments:
             if opt in ["-l", "--list"]:
                 config.set(LIST, True)
-                config.set(DAEMON, False)
                 continue
 
             if opt in ["-p", "--print"]:

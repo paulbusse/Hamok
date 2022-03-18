@@ -55,8 +55,7 @@ class BaseEntity(object):
             _friendly = attribute
 
         en = component + "_" + systemname + "_" + _friendly
-        en = en.lower()
-        en = re.sub(r"\W", '_', en)
+        en = config.normalize(en)
 
         self._hatype = entitytype
         self._id = component + "_" + systemlabel + "_" + attribute

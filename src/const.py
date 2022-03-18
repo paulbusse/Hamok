@@ -6,7 +6,6 @@ import enum
 Keys from the public configuration file
 """
 MONITOR = "monitor"
-COMPONENT = "device"
 MQTT = "mqtt"
 OEKOFEN = "oekofen"
 HOST = "host"
@@ -50,15 +49,13 @@ TOPICROOT = 'homeassistant/'
 
 """ Internal Config keys """
 LIST = "__list"
-DAEMON = "__daemon"
 PRINT = "__print"
-
+COMPONENT = "__device"
 
 """ Default Configuration """
 DEFAULTCONFIG = {
     CLIENTID: "hamok",
     LOGGER: "default",
-    DAEMON: True,
     LIST: False,
     PRINT: False,
     MQTT: {
