@@ -111,6 +111,37 @@ MQTT topic names have 4 components
 homeassistant/switch/oekofen/oekofen_ww1_heat_once/state
 ```
 
+### Changing names
+
+Changing names has effect on what you see in HA.
+
+If you change the Ökofen component name (these are case insensitive):
+
+* the MQTT topic queue changes
+* The HA entity name changes
+* The default friendly name for the entity name changes
+
+If you change the `device` configuration setting:
+
+* the MQTT topic queue changes
+* The HA entity name changes
+* The default friendly name for the entity name changes
+* the internal ID for the HA entity changes: HA will consider this a new entity.
+
+When the MQTT topic changes HA may get confused and show errors like
+
+```
+Platform mqtt does not generate unique IDs. ID oekofen_system_L_usb_stick already exists - ignoring binary_sensor.oekofen_system_usb_stick
+```
+
+This usually means that there are 2 MQTT topics trying to create devices with the same ID. It means that you have to cleanup the retained MQTT messages. 
+
+The preferred way, to do is to remove the unneeded topics. Install a tool like [MQTT Explorer](http://mqtt-explorer.com/) and find the topics causing the issue and remove them. If you remove one to many, do not worry, restart hamok and they will reappear.
+
+```bash
+$ sudo systemctl restart hamok
+```
+
 ## HA configuration
 
 We try to do as much as we can in Hamök to avoid changes in HA. However, we believe that Home Assistant is good at what it does. So, whatever that can be done in HA, should be done in HA. I'm well aware that Hamök is not where it needs to be on this point. Improvements can be expected in the future.
@@ -204,6 +235,8 @@ If an empty value is specified, the default value will be used.
 ```yaml
 device: newyork
 ```
+
+NOTE: changing the device name also changes the internal id for Home Assistant. This means that new sensors will be defined and the old ones won't be usable.
 
 **Client Identifier**
 

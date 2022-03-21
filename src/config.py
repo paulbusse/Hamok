@@ -54,8 +54,7 @@ def update(d, u):
 
 def normalize(s: str):
     rs = re.sub(r"\W", '_', s)
-    rs.lower()
-    return rs
+    return rs.lower()
 
 def validate():
     fatal = False

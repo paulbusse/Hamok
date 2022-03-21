@@ -85,6 +85,8 @@ oekofen:
   jsonpassword: AbCd
 ```
 
+You should consider changing the `device` name now, if you want. Setting the device is only interesting if you will have two independent Ökofen installs. Changing the device name later, requires an additional procedure. I will describe later.
+
 For other configuration settings please read the [user guide](usage.md)
 
 ## Step 4: Configure Home Assistant

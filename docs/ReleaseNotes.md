@@ -1,6 +1,16 @@
 # Release History
 
-## V 22.4
+## Version --NEXT--
+
+### Functionality
+
+* Device name gets normalized wherever it is used as part of an identifier
+
+### Bug fixes
+
+* In the topic names the Ökofen identifier was used not the friendly
+
+## Version 22.4
 
 Release date: 2022-03-17
 
@@ -19,7 +29,7 @@ It introduces threading to handle incoming message.
 
 - The values sent to HA now have one decimal digit.
 
-## V 22.3
+## Version 22.3
 
 ### Functionality
 - Connect to the JSON interface of the Ökofen system
