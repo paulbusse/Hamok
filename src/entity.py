@@ -123,9 +123,9 @@ class BaseEntity(object):
             'state_topic': self.statetopic,
             'device': {
                 'manufacturer': 'Ökofen',
-                'identifiers': ["123456789"], #TODO: find real identifier
+                'identifiers': ["123456789"], #FIXME: find real identifier
                 'name': device,
-                'sw_version': 'v4.00b', #TODO: find this from system
+                'sw_version': 'v4.00b', #FIXME: find this from system
             },
             # device_class: skipped for now
             'name': self._entityname,

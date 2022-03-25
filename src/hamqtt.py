@@ -50,7 +50,7 @@ class Mqttc:
         mqttport = cfg[MQTTPORT]
 
         self._client = mqtt.Client(clientid)
-        self._client._keepalive = 60 #TODO: make this configurable
+        self._client._keepalive = 60 #FIXME: make this configurable
         self._client.on_connect = self.on_connect
         self._client.on_disconnect = self.on_disconnect
         self._client.on_message = self.on_message
@@ -67,6 +67,21 @@ class Mqttc:
             time.sleep(0.1)
 
         llog.info("Connected to MQTT broker at {}:{} as {}.".format(mqtthost, mqttport, clientid))
+
+
+    def disconnect(self):
+        if not self._connected:
+            return
+        try:
+            self._client.disconnect()
+        except Exception as e:
+            llog.error(f"Disconnecting from broker failed: {e}")
+            return
+
+        while not self._connected:
+            time.sleep(0.1)
+
+        llog.info("Disconnected from MQTT broker.")
 
 
     def create_entity(self, entity):

@@ -1,7 +1,8 @@
 import time
-
+import atexit
 import getopt
 import sys
+import signal
 
 import parse
 import config
@@ -58,10 +59,39 @@ def _handleOptions():
         _help()
 
 
+def _exitlog():
+    llog.info("Exiting process")
+
+def _mqttdisconnect():
+    hamqttc.disconnect()
+
+def _sighandler(signum, frame):
+    name = signal.Signals(signum).name
+    if signum in [
+        signal.SIGHUP,
+        signal.SIGINT,
+        signal.SIGQUIT,
+        signal.SIGTERM,
+        signal.SIGPWR,
+    ]:
+        llog.info(f"Received signal {name}({signum}). Exiting")
+        exit()
+    else:
+        llog.debug(f"Received signal {name}({signum}). Ignoring")
+
+
+def _set_sighandler():
+    for s in signal.Signals:
+        v = signal.Signals(s).value
+        try:
+            signal.signal(s, _sighandler)
+        except OSError as e:
+            pass
+
+
 """ Main program """
 def main():
     _handleOptions()
-
 
     if configfile is None:
         llog.error("No configuration file specified.")
@@ -85,23 +115,28 @@ def main():
         entitylist.dump()
         exit()
 
-    """ We can now start the main loop """
 
-    """ Start threads """
+    """ Set up the environment for the main loop """
+
+    _set_sighandler()
+
     llog.info("starting process")
+    atexit.register(_exitlog)
 
     hamqttc.connect()
+    atexit.register(_mqttdisconnect)
+
     entitylist.create_entities()
     hamqttc.subscribe()
 
     interval = config.get(INTERVAL)
 
+    """ We can now start the main loop """
+
     run = True # For future use!
     while run:
         time.sleep(interval)
         jobhandler.execute_alljob()
-
-    llog.info("Exiting process")
 
 if __name__ == "__main__":
     main()
