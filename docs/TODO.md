@@ -4,16 +4,16 @@
   - requires birth and will messages
     - requires birth message
     - requires will message
+  - Count the number of failures to a remote site
 - more secure usage of MQTT
 - validate that all monitors in the list exist
 - delete monitors in HA that are no longer configured, by deleting the corresponding topics
 - upgrade to Python 3.9 and 3.10.
 - detect if hamok runs in virtual env
-- reload config on signal (systemctl?)
+- reload config on signal (systemctl?) or use an MQTT topic
 - Validate return codes in callback on connect
 - Validate return codes in callback on publish
 - Validate return codes in callback on subscribe
-- refactoring: parse.py should be integrated in oekofen.py
 - refactoring: entity.factory: oekofen specific part should go to oekofen.py
 - set device class for HA devices
 - refactoring: use f-strings everywhere

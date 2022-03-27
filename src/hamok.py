@@ -4,7 +4,6 @@ import getopt
 import sys
 import signal
 
-import parse
 import config
 import entitylist
 from hamqtt import hamqttc
@@ -15,8 +14,6 @@ import llog
 
 from const import (
     INTERVAL,
-    LIST,
-    PRINT,
 )
 
 options = "c:hlp"
@@ -33,18 +30,59 @@ def _help():
     print("You must specify a configuration file")
     exit()
 
+
+def _list():
+    oekofenc.configure()
+    oekofenc.load()
+    entitylist.dump()
+    exit()
+
+
+def _print():
+    config.cprint()
+    exit()
+
+def _service():
+
+    oekofenc.configure()
+    oekofenc.load()
+
+    """ Set up the environment for the main loop """
+
+    _set_sighandler()
+
+    llog.info("starting process")
+    atexit.register(_exitlog)
+
+    hamqttc.connect()
+    atexit.register(_mqttdisconnect)
+
+    entitylist.create_entities()
+    hamqttc.subscribe()
+
+    interval = config.get(INTERVAL)
+
+    """ We can now start the main loop """
+
+    run = True # For future use!
+    while run:
+        time.sleep(interval)
+        jobhandler.execute_alljob()
+
+
 def _handleOptions():
     global configfile
+    executor = _service
     try:
         arguments, values = getopt.getopt(sys.argv[1:], options, longoptions)
 
         for opt, val in arguments:
             if opt in ["-l", "--list"]:
-                config.set(LIST, True)
+                executor = _list
                 continue
 
             if opt in ["-p", "--print"]:
-                config.set(PRINT, True)
+                executor = _print
                 continue
 
             if opt in ["-c", "--config"]:
@@ -58,6 +96,7 @@ def _handleOptions():
         print (str(err))
         _help()
 
+    return executor
 
 def _exitlog():
     llog.info("Exiting process")
@@ -91,7 +130,7 @@ def _set_sighandler():
 
 """ Main program """
 def main():
-    _handleOptions()
+    executor = _handleOptions()
 
     if configfile is None:
         llog.error("No configuration file specified.")
@@ -99,44 +138,8 @@ def main():
 
     config.load(configfile)
 
-    if config.get(PRINT):
-        config.cprint()
-        exit()
+    executor()
 
-    oekofenc.configure()
-    data = oekofenc.load()
-    if data:
-        parse.parser(data)
-    else:
-        llog.error("Could not retrieve information from Ökofen system.")
-        exit()
-
-    if config.get(LIST):
-        entitylist.dump()
-        exit()
-
-
-    """ Set up the environment for the main loop """
-
-    _set_sighandler()
-
-    llog.info("starting process")
-    atexit.register(_exitlog)
-
-    hamqttc.connect()
-    atexit.register(_mqttdisconnect)
-
-    entitylist.create_entities()
-    hamqttc.subscribe()
-
-    interval = config.get(INTERVAL)
-
-    """ We can now start the main loop """
-
-    run = True # For future use!
-    while run:
-        time.sleep(interval)
-        jobhandler.execute_alljob()
 
 if __name__ == "__main__":
     main()

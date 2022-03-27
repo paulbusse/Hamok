@@ -48,16 +48,12 @@ TOPICROOT = 'homeassistant/'
 
 
 """ Internal Config keys """
-LIST = "__list"
-PRINT = "__print"
 COMPONENT = "__device"
 
 """ Default Configuration """
 DEFAULTCONFIG = {
     CLIENTID: "hamok",
     LOGGER: "default",
-    LIST: False,
-    PRINT: False,
     MQTT: {
         MQTTPORT: 1883
     },

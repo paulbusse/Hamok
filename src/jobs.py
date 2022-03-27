@@ -41,12 +41,7 @@ class Jobs:
             # PYTHON 3.10 use switch statement
             if job[JOBID] == JobID.ALL:
                 from oekofen import oekofenc
-                import parse
-                fdata = oekofenc.load()
-                if fdata:
-                    parse.parser(fdata)
-                else:
-                    llog.error("Could not retrieve information from Ökofen system.")
+                oekofenc.load()
 
             elif job[JOBID] == JobID.UPDATE:
                 entity = job[ENTITY]
