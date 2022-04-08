@@ -1,6 +1,8 @@
+import atexit
 import json
 import time
 import paho.mqtt.client as mqtt
+import sys
 
 import llog
 import config
@@ -11,6 +13,9 @@ from const import (
     MQTTHOST,
     MQTTPORT,
 )
+
+def stoploop():
+    hamqttc.stoploop();
 
 class Mqttc:
 
@@ -23,7 +28,23 @@ class Mqttc:
         """
         self._connected = 0
         self._client = None
+        self._clientid = None
         self._cmdtopics = dict()
+        self._host = None
+        self._port = None
+
+    def configure(self):
+        cfg = config.get(MQTT)
+        self._clientid = config.get(CLIENTID)
+        self._host = cfg[MQTTHOST]
+        self._port = cfg[MQTTPORT]
+
+        self._client = mqtt.Client(self._clientid)
+        self._client._keepalive = 60 #FIXME: make this configurable
+        self._client.on_connect = self.on_connect
+        self._client.on_disconnect = self.on_disconnect
+        self._client.on_message = self.on_message
+        self._client._clean_session = False
 
     def on_connect(self, client, userdata, flags, rc):
         if rc != 0:
@@ -44,30 +65,24 @@ class Mqttc:
 
 
     def connect(self):
-        cfg = config.get(MQTT)
-        clientid = config.get(CLIENTID)
-        mqtthost = cfg[MQTTHOST]
-        mqttport = cfg[MQTTPORT]
-
-        self._client = mqtt.Client(clientid)
-        self._client._keepalive = 60 #FIXME: make this configurable
-        self._client.on_connect = self.on_connect
-        self._client.on_disconnect = self.on_disconnect
-        self._client.on_message = self.on_message
-        self._client._clean_session = False
-
         try:
-            ret = self._client.connect(mqtthost,mqttport)
-            self._client.loop_start()
+            ret = self._client.connect(self._host,self._port)
         except Exception as e:
-            llog.error("Failed to connect to MQTT broker at {}:{} : {}".format(mqtthost, mqttport, e))
-            exit()
+            llog.error("Failed to connect to MQTT broker at {}:{} : {}".format(self._host, self._port, e))
+            sys.exit("MQTT Broker connection")
+
+        atexit.register(stoploop)
+        self._client.loop_start()
 
         while not self._connected:
             time.sleep(0.1)
 
-        llog.info("Connected to MQTT broker at {}:{} as {}.".format(mqtthost, mqttport, clientid))
+        llog.info("Connected to MQTT broker at {}:{} as {}.".format(self._host, self._port, self._clientid))
 
+
+    def stoploop(self):
+        llog.debug("Terminating MQTT loop")
+        self._client.loop_stop()
 
     def disconnect(self):
         if not self._connected:
@@ -103,9 +118,6 @@ class Mqttc:
 
     def publish_value(self, topic, v):
         try:
-            if not self._connected:
-                self.connect()
-
             ret = self._client.publish(topic, payload=v, qos=1, retain=True)
         except Exception as e:
             llog.error(f"Failed to publish to MQTT topic {topic}: {e}")

@@ -43,6 +43,13 @@ ONOFFFORMATS = [
 ]
 
 
+""" HA Values """
+OFFLINE = 'offline'
+ONLINE = 'online'
+OFF = 'off'
+ON = 'on'
+
+
 """ HA Basic configuration """
 TOPICROOT = 'homeassistant/'
 
@@ -50,7 +57,7 @@ TOPICROOT = 'homeassistant/'
 """ Internal Config keys """
 COMPONENT = "__device"
 
-""" Default Configuration """
+""" Default Configuration """ # TODO move to config.py
 DEFAULTCONFIG = {
     CLIENTID: "hamok",
     LOGGER: "default",
@@ -75,19 +82,18 @@ PAYLOAD = "payload"
 CALLBACK = "callback"
 ARGUMENTS = "arguments"
 class JobID(enum.Enum):
-    ALL = 1
     UPDATE = 2
     SCHEDULE = 3
 
 
-""" LOGGING CONFIG """
+""" LOGGING CONFIG """ # TODO move to config.py
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
             'format':
-            '%(asctime)s %(levelname)-10s %(message)s'
+            '%(asctime)s %(levelname)-10s tid-%(thread)d: %(message)s'
         },
         'syslog': {
             'format': 'hamok[%(process)d] %(levelname)-8s %(message)s'

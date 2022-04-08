@@ -7,7 +7,10 @@ import entity
 import config
 import llog
 
+from jobs import jobhandler
 from const import (
+    ARGUMENTS,
+    CALLBACK,
     HOST,
     JSONPORT,
     JSONPWD,
@@ -22,7 +25,6 @@ class Oekofen:
     def __init__(self):
         self._url = None
 
-
     def configure(self):
         cfg = config.get(OEKOFEN)
         host = cfg[HOST]
@@ -31,16 +33,28 @@ class Oekofen:
         self._url = 'http://' + host + ':' + str(port) + '/' + pwd + '/'
 
 
-    def load(self):
-        try:
-            res = urllib.request.urlopen(self._url + 'all?')
-            rdata = res.read()
-            jdata = json.loads(rdata.decode('latin-1'))
-            if jdata:
-                self._parser(jdata)
-        except Exception as e:
-            llog.error(f"Loading info from Ökofen failed: {e}")
-            return None
+    def load(self, on_success, on_failure):
+
+        def oekofen_load(on_success, on_failure):
+            try:
+                res = urllib.request.urlopen(self._url + 'all?')
+                rdata = res.read()
+                jdata = json.loads(rdata.decode('latin-1'))
+                if jdata:
+                    self._parser(jdata)
+                if on_success:
+                    on_success()
+
+            except Exception as e:
+                llog.error(f"Loading info from Ökofen failed: {e}.")
+                if on_failure:
+                    on_failure()
+
+        jobhandler.schedule({
+                CALLBACK: oekofen_load,
+                ARGUMENTS: [on_success, on_failure]
+            })
+
 
 
     def publish_value(self, okfname, val):

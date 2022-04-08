@@ -16,6 +16,7 @@ import config
 from hamqtt import hamqttc
 from oekofen import oekofenc
 from jobs import jobhandler
+from service import servicec
 
 from const import (
     ARGUMENTS,
@@ -37,11 +38,9 @@ from const import (
     UNIT,
 
     ONOFFFORMATS,
+    ON,
+    OFF,
 )
-
-""" HA switch statuses"""
-ON = 'ON'
-OFF = 'OFF'
 
 class BaseEntity(object):
     """ Base class for all entities """
@@ -120,6 +119,9 @@ class BaseEntity(object):
         device = config.get(DEVICE)
         return {
             '~': self.basetopic,
+            'availability': [
+                {'topic': servicec.connecttopic },
+            ],
             'state_topic': self.statetopic,
             'device': {
                 'manufacturer': 'Ökofen',

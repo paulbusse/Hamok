@@ -4,7 +4,6 @@
   - requires birth and will messages
     - requires birth message
     - requires will message
-  - Count the number of failures to a remote site
 - more secure usage of MQTT
 - validate that all monitors in the list exist
 - delete monitors in HA that are no longer configured, by deleting the corresponding topics
@@ -22,10 +21,13 @@
 - on re_connect publish all the available values
 - reverse engineer state bitmap
 - config file through environment variable
-
-## detect that we are running from a terminal and use devel logger
-
-Subtask: the 'Devel' logger cannot be set in the configuration file and becomes an illegal value.
+- add option for debug mode. Rename the devel logger, debug
+- give names to threads and use them in logging
+- refactoring: move the configurations from const.py to config.py
+- extract version information from the system
+- Make the max number of failures configurable
+- What if MQTT is not available
+- set the urllib timeout
 
 # Low priority
 

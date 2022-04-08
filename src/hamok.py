@@ -1,4 +1,3 @@
-import time
 import atexit
 import getopt
 import sys
@@ -6,15 +5,13 @@ import signal
 
 import config
 import entitylist
-from hamqtt import hamqttc
+import llog
+
+from service import servicec
 from oekofen import oekofenc
 from jobs import jobhandler
 
-import llog
 
-from const import (
-    INTERVAL,
-)
 
 options = "c:hlp"
 longoptions = ["config=", "help", "list", "print"]
@@ -31,11 +28,18 @@ def _help():
     exit()
 
 
+def _list_load_success():
+    entitylist.dump()
+
+
+def _list_load_failure():
+    llog.fatal("No data retrieved from Pellematic.")
+
+
 def _list():
     oekofenc.configure()
-    oekofenc.load()
-    entitylist.dump()
-    exit()
+    oekofenc.load(_list_load_success, _list_load_failure)
+    jobhandler.wait()
 
 
 def _print():
@@ -44,30 +48,13 @@ def _print():
 
 def _service():
 
-    oekofenc.configure()
-    oekofenc.load()
-
-    """ Set up the environment for the main loop """
-
+    servicec.configure()
     _set_sighandler()
 
     llog.info("starting process")
     atexit.register(_exitlog)
 
-    hamqttc.connect()
-    atexit.register(_mqttdisconnect)
-
-    entitylist.create_entities()
-    hamqttc.subscribe()
-
-    interval = config.get(INTERVAL)
-
-    """ We can now start the main loop """
-
-    run = True # For future use!
-    while run:
-        time.sleep(interval)
-        jobhandler.execute_alljob()
+    servicec.run()
 
 
 def _handleOptions():
@@ -101,8 +88,6 @@ def _handleOptions():
 def _exitlog():
     llog.info("Exiting process")
 
-def _mqttdisconnect():
-    hamqttc.disconnect()
 
 def _sighandler(signum, frame):
     name = signal.Signals(signum).name

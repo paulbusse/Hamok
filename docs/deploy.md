@@ -35,6 +35,30 @@ You are free to use whatever broker you like. It never hurt anyone to read the m
 
 Hamök always uses the same clientid to connect to the broker and should be able to pick up messages that were send while it was down. This also requires that the broker must be set up to forget about Hamök should you no longer need it.
 
+Below is the very simple set up I use for the `mosquitto` broker.
+
+Install the broker:
+
+```bash
+$ sudo apt install mosquitto
+```
+
+Edit the configuration file in `/etc/moquitto/mosquitto.conf`
+
+```
+pid_file /var/run/mosquitto.pid
+
+persistence true
+persistence_location /var/lib/mosquitto/
+persistent_client_expiration 2m
+queue_qos0_messages true
+
+log_dest file /var/log/mosquitto/mosquitto.log
+```
+
+We like persistence to be on. This means that HA picks up the latest definitions and values when he restarts. For the other configuration settings please refer to the broker's manual.
+
+
 
 
 ## Step 3: Configure Hamök
