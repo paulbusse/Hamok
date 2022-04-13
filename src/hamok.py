@@ -1,23 +1,17 @@
-import time
-
+import atexit
 import getopt
 import sys
+import signal
 
-import parse
 import config
 import entitylist
-from hamqtt import hamqttc
+import llog
+
+from service import servicec
 from oekofen import oekofenc
 from jobs import jobhandler
 
-import llog
 
-from const import (
-    DAEMON,
-    INTERVAL,
-    LIST,
-    PRINT,
-)
 
 options = "c:hlp"
 longoptions = ["config=", "help", "list", "print"]
@@ -33,19 +27,49 @@ def _help():
     print("You must specify a configuration file")
     exit()
 
+
+def _list_load_success():
+    entitylist.dump()
+
+
+def _list_load_failure():
+    llog.fatal("No data retrieved from Pellematic.")
+
+
+def _list():
+    oekofenc.configure()
+    oekofenc.load(_list_load_success, _list_load_failure)
+    jobhandler.wait()
+
+
+def _print():
+    config.cprint()
+    exit()
+
+def _service():
+
+    servicec.configure()
+    _set_sighandler()
+
+    llog.info("starting process")
+    atexit.register(_exitlog)
+
+    servicec.run()
+
+
 def _handleOptions():
     global configfile
+    executor = _service
     try:
         arguments, values = getopt.getopt(sys.argv[1:], options, longoptions)
 
         for opt, val in arguments:
             if opt in ["-l", "--list"]:
-                config.set(LIST, True)
-                config.set(DAEMON, False)
+                executor = _list
                 continue
 
             if opt in ["-p", "--print"]:
-                config.set(PRINT, True)
+                executor = _print
                 continue
 
             if opt in ["-c", "--config"]:
@@ -59,11 +83,39 @@ def _handleOptions():
         print (str(err))
         _help()
 
+    return executor
+
+def _exitlog():
+    llog.info("Exiting process")
+
+
+def _sighandler(signum, frame):
+    name = signal.Signals(signum).name
+    if signum in [
+        signal.SIGHUP,
+        signal.SIGINT,
+        signal.SIGQUIT,
+        signal.SIGTERM,
+        signal.SIGPWR,
+    ]:
+        llog.info(f"Received signal {name}({signum}). Exiting")
+        exit()
+    else:
+        llog.debug(f"Received signal {name}({signum}). Ignoring")
+
+
+def _set_sighandler():
+    for s in signal.Signals:
+        v = signal.Signals(s).value
+        try:
+            signal.signal(s, _sighandler)
+        except OSError as e:
+            pass
+
 
 """ Main program """
 def main():
-    _handleOptions()
-
+    executor = _handleOptions()
 
     if configfile is None:
         llog.error("No configuration file specified.")
@@ -71,39 +123,8 @@ def main():
 
     config.load(configfile)
 
-    if config.get(PRINT):
-        config.cprint()
-        exit()
+    executor()
 
-    oekofenc.configure()
-    data = oekofenc.load()
-    if data:
-        parse.parser(data)
-    else:
-        llog.error("Could not retrieve information from Ökofen system.")
-        exit()
-
-    if config.get(LIST):
-        entitylist.dump()
-        exit()
-
-    """ We can now start the main loop """
-
-    """ Start threads """
-    llog.info("starting process")
-
-    hamqttc.connect()
-    entitylist.create_entities()
-    hamqttc.subscribe()
-
-    interval = config.get(INTERVAL)
-
-    run = True # For future use!
-    while run:
-        time.sleep(interval)
-        jobhandler.execute_alljob()
-
-    llog.info("Exiting process")
 
 if __name__ == "__main__":
     main()

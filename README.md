@@ -23,6 +23,7 @@ Hamök connects to the JSON interface of the Ökofen system and translates the i
 * It regularly connects to the JSON interface and sends updates to HA whenever the value changes. Depending on the monitored value we use [binary sensors](https://www.home-assistant.io/integrations/binary_sensor.mqtt/), or regular [sensors](https://www.home-assistant.io/integrations/sensor.mqtt/)
 
 - If the values can be set on the Ökofen system, you can change them in HA. The entities that can be changed are configured in such a way that you can only set acceptable values. Here we use [select](https://www.home-assistant.io/integrations/select.mqtt/), [numbers](https://www.home-assistant.io/integrations/number.mqtt/), or [switches](https://www.home-assistant.io/integrations/switch.mqtt/)
+- When the Ökofen system cannot be reached, the sensors are marked as unavailable. 
 
 ## Further documentation
 

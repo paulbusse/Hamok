@@ -95,9 +95,11 @@ oekofen_ground_floor_roomtemp_act
 
 ### MQTT Topics
 
+#### Entity related topics
+
 We follow the HA guidelines here. 
 
-MQTT topic names have 4 components
+MQTT topic names that contribute to the sensors have 4 components
 
 * the first is `homeassistant`
 * the second is the entity type. This is explained in the section [Which values you want to monitor](#which-values-you-want-to-monitor).
@@ -105,10 +107,57 @@ MQTT topic names have 4 components
 * the fourth is the message type:
   * `config`: contains the latest definition of the HA entity. Messages here are send in retain mode
   * `state`: contains the latest value for the entity. Messages here are send in retain mode
-  * `cmd`: is the topic where HA publishes changes to the Hamök on.
+  * `cmd`: is the topic where HA publishes changes to the Hamök on. These topics are only defined for changeable entities: `switch`, `number` and `select.`
 
 ```
 homeassistant/switch/oekofen/oekofen_ww1_heat_once/state
+```
+
+#### Connection topic
+
+The connection topic represents the state of the connection to the Ökofen system. The name of the connection topic is
+
+```
+hamok/<normalized_devicename>/connection
+```
+
+The normalized device name, replaces all strange characters by '_'(underscore)
+
+When Hamök starts and makes a first successful connection to the Pellematic, if will publish `online` on the connection topic.
+
+If Hamök cannot reach the Ökofen system, it will retry 5 times. If it is not successful after that, Hamök will publish `offline` on the connection topic before exiting. It will be restarted through `systemd`.
+
+All entities in HA are configured to show unavailable when `offline` is published on the `connection` topic.
+
+### Changing names
+
+Changing names has effect on what you see in HA.
+
+If you change the Ökofen component name (these are case insensitive):
+
+* the MQTT topic queue changes
+* The HA entity name changes
+* The default friendly name for the entity name changes
+
+If you change the `device` configuration setting:
+
+* the MQTT topic queue changes
+* The HA entity name changes
+* The default friendly name for the entity name changes
+* the internal ID for the HA entity changes: HA will consider this a new entity.
+
+When the MQTT topic changes HA may get confused and show errors like
+
+```
+Platform mqtt does not generate unique IDs. ID oekofen_system_L_usb_stick already exists - ignoring binary_sensor.oekofen_system_usb_stick
+```
+
+This usually means that there are 2 MQTT topics trying to create devices with the same ID. It means that you have to cleanup the retained MQTT messages. 
+
+The preferred way, to do is to remove the unneeded topics. Install a tool like [MQTT Explorer](http://mqtt-explorer.com/) and find the topics causing the issue and remove them. If you remove one to many, do not worry, restart hamok and they will reappear.
+
+```bash
+$ sudo systemctl restart hamok
 ```
 
 ## HA configuration
@@ -204,6 +253,8 @@ If an empty value is specified, the default value will be used.
 ```yaml
 device: newyork
 ```
+
+NOTE: changing the device name also changes the internal id for Home Assistant. This means that new sensors will be defined and the old ones won't be usable.
 
 **Client Identifier**
 

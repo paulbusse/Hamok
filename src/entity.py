@@ -16,11 +16,13 @@ import config
 from hamqtt import hamqttc
 from oekofen import oekofenc
 from jobs import jobhandler
+from service import servicec
 
 from const import (
     ARGUMENTS,
     CALLBACK,
     COMPONENT,
+    DEVICE,
 
     BINARYSENSOR,
     MAXIMUM,
@@ -36,11 +38,9 @@ from const import (
     UNIT,
 
     ONOFFFORMATS,
+    ON,
+    OFF,
 )
-
-""" HA switch statuses"""
-ON = 'ON'
-OFF = 'OFF'
 
 class BaseEntity(object):
     """ Base class for all entities """
@@ -48,6 +48,7 @@ class BaseEntity(object):
     def __init__(self, entitytype: str, systemname: str, attribute: str, systemlabel: str, data):
         """ You cannot use any of the derived functions in this function """
         component = config.get(COMPONENT)
+        device = config.get(DEVICE)
 
         if attribute[0:2] == "L_":
             _friendly = attribute[2:]
@@ -55,11 +56,10 @@ class BaseEntity(object):
             _friendly = attribute
 
         en = component + "_" + systemname + "_" + _friendly
-        en = en.lower()
-        en = re.sub(r"\W", '_', en)
+        en = config.normalize(en)
 
         self._hatype = entitytype
-        self._id = component + "_" + systemlabel + "_" + attribute
+        self._id = device + "_" + systemlabel + "_" + attribute
         self._entityname = en
         self._oekofenname = systemlabel + "." + attribute
         self._enabled = False
@@ -87,7 +87,7 @@ class BaseEntity(object):
     @property
     def basetopic(self):
         component = config.get(COMPONENT)
-        return TOPICROOT + self.hatype + "/" + component + "/" + self._id
+        return TOPICROOT + self.hatype + "/" + component + "/" + self._entityname
 
     @property
     def createtopic(self):
@@ -116,15 +116,18 @@ class BaseEntity(object):
         return self._value
 
     def control_data(self):
-        component = config.get(COMPONENT)
+        device = config.get(DEVICE)
         return {
             '~': self.basetopic,
+            'availability': [
+                {'topic': servicec.connecttopic },
+            ],
             'state_topic': self.statetopic,
             'device': {
                 'manufacturer': 'Ökofen',
-                'identifiers': ["123456789"], #TODO: find real identifier
-                'name': component,
-                'sw_version': 'v4.00b', #TODO: find this from system
+                'identifiers': ["123456789"], #FIXME: find real identifier
+                'name': device,
+                'sw_version': 'v4.00b', #FIXME: find this from system
             },
             # device_class: skipped for now
             'name': self._entityname,

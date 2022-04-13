@@ -23,8 +23,10 @@ class Jobs:
         job[JOBID] = JobID.SCHEDULE
         self._queue.put(job)
 
-    def execute_alljob(self):
-        self._queue.put({JOBID: JobID.ALL})
+
+    def wait(self):
+        self._queue.join()
+
 
     def execute_updatejob(self, ent, payload):
         self._queue.put({
@@ -36,24 +38,15 @@ class Jobs:
     def job_handler(self, i):
         while True:
             job = self._queue.get()
-            llog.debug(f"Worker {i} is executing {job}")
 
-            # PYTHON 3.10 use switch statement
-            if job[JOBID] == JobID.ALL:
-                from oekofen import oekofenc
-                import parse
-                fdata = oekofenc.load()
-                if fdata:
-                    parse.parser(fdata)
-                else:
-                    llog.error("Could not retrieve information from Ökofen system.")
-
-            elif job[JOBID] == JobID.UPDATE:
+            if job[JOBID] == JobID.UPDATE:
                 entity = job[ENTITY]
                 value = job[PAYLOAD]
+                llog.debug(f"Worker {i} is executing <Updating HA>")
                 entity.set_haval(value)
 
             elif job[JOBID] == JobID.SCHEDULE:
+                llog.debug(f"Worker {i} is executing <{job[CALLBACK].__name__}>.")
                 job[CALLBACK](*job[ARGUMENTS])
 
             self._queue.task_done()
