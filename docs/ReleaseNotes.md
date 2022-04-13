@@ -1,14 +1,30 @@
 # Release History
 
-## Version --NEXT--
+## Version 22.5
 
 ### Functionality
 
 * Device name gets normalized wherever it is used as part of an identifier
+* Hamök exits properly when it can: it closes connections, sends the necessary messages.
+* When Hamök could not execute its functions (no MQTT broker, no Pellematic) it returns an error code.
+* When the connection to the Pellematic fails 5 times the process exits. Note that `systemd` will restart it.
+* Hamök sets the sensors to 'unavailable' if the Pellematic is not reachable, and back to available when it becomes reachable again.
 
 ### Bug fixes
 
 * In the topic names the Ökofen identifier was used not the friendly
+
+* If Hamök has collisions with the Pellematic app, it sometimes continues these collisions after restart.
+
+* Some code cleanup has been done.
+  * Added the `service.py` module
+  * `hamqqt.py`handles only communication with MQTT, no business logic
+  * cleaning up of debug messages.
+  
+### Upgrade
+
+When upgrading use the deployment document and you can skip steps 2 (MQTT setup), 3 (Hamok setup), 4 (HA setup).  
+
 
 ## Version 22.4
 

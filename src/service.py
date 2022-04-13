@@ -32,16 +32,17 @@ class Service:
         hamqttc.connect()
         atexit.register(_mqttdisconnect)
 
-        hamqttc.publish_value(self._connecttopic, ONLINE)
 
     def run(self):
 
         def on_success():
             self._failures = 0
             if self._firstrun:
+                hamqttc.publish_value(self._connecttopic, ONLINE)
                 entitylist.create_entities()
                 hamqttc.subscribe()
                 self._firstrun = False
+
 
         def on_failure():
             self._failures += 1

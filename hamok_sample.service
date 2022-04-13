@@ -8,7 +8,7 @@ Wants=home-assistant.service
 Type=simple
 User=homeassistant
 ExecStart=<installdir>/bin/hamok -c <installdir>/config.yaml
-RestartSec=3
+RestartSec=15
 Restart=always
 
 [Install]

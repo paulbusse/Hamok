@@ -1,6 +1,6 @@
 <img src="pics/hamok.png" style="zoom: 50%;" />
 
-# Deployment (Version 22.4)
+# Deployment (Version 22.5)
 
 You need:
 
@@ -16,12 +16,14 @@ If you are upgrading you can skip steps 3, 4 and 6. You may want to look at step
 
 ## Step 1: Download the source
 
+_Last changes: version 22.5_
+
 You can download the source here
 
-* [ZIP file](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.4.zip)
-* [Compressed tarball(.tgz)](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.4.tar.gz)
+* [ZIP file](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.5.zip)
+* [Compressed tarball(.tgz)](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.5.tar.gz)
 
-You should now have a file `Hamok-v22.4.[zip|tar.gz]`in your current directory. Unpack this archive where you want to install Hamök. I install it in the home directory of my `homeassistant`account.
+You should now have a file `Hamok-v22.5.[zip|tar.gz]`in your current directory. Unpack this archive where you want to install Hamök. I install it in the home directory of my `homeassistant`account.
 
 The  rest of this guide assumes that you are located in the top directory of the code.
 
@@ -30,6 +32,8 @@ $ cd Hamok
 ```
 
 ## Step 2: Configure the MQTT broker
+
+_Last changes: v22.3_
 
 You are free to use whatever broker you like. It never hurt anyone to read the manual. We are using QoS 1 messages. Make sure that the messages that are sent persist.
 
@@ -62,6 +66,8 @@ We like persistence to be on. This means that HA picks up the latest definitions
 
 
 ## Step 3: Configure Hamök
+
+_Last changes: v22.3_
 
 In the directory you will find a file called `config_sample.yaml`. Copy or rename it to `config.yaml`. You will need the following pieces of information to get Hamök to work correctly.
 
@@ -115,6 +121,8 @@ For other configuration settings please read the [user guide](usage.md)
 
 ## Step 4: Configure Home Assistant
 
+_Last changes: v22.3_
+
 This is the simplest of steps.
 
 * Go to `Configuration/Devices and Services/Integrations`
@@ -127,11 +135,19 @@ If everything goes well you will see a success message.
 
 ## Step 5: Running Hamok
 
+_Last changes: v22.3_
+
 Before running Hamok you need to install its dependencies:
 
 ```bash
 $ pip3 install -r requirements.txt
 ```
+
+Note: the dependencies are
+
+* `paho-mqtt`
+
+* `pyyaml`
 
 Make sure that Home Assistant is running before you continue.
 
@@ -175,6 +191,8 @@ The device is named `Oekofen`. The entity is called `sensor.oekofen_system_ambie
 
 ## Step 6: Integrating in systemd
 
+_last changes: v22.5_
+
 First of all you must change `bin/hamok`if you are running this in a python virtual env. Add the line
 
 ```bash
@@ -204,7 +222,7 @@ Wants=home-assistant.service
 Type=simple
 User=homeassistant
 ExecStart=<installdir>/bin/hamok -c <installdir>/config.yaml
-RestartSec=3
+RestartSec=15
 Restart=always
 
 [Install]

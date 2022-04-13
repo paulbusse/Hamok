@@ -13,21 +13,23 @@
 - Validate return codes in callback on connect
 - Validate return codes in callback on publish
 - Validate return codes in callback on subscribe
-- refactoring: entity.factory: oekofen specific part should go to oekofen.py
 - set device class for HA devices
-- refactoring: use f-strings everywhere
-- refactoring: remove dependency of hamqtt on entity
-- refactoring: all jobs should be created using schedule
 - on re_connect publish all the available values
 - reverse engineer state bitmap
 - config file through environment variable
 - add option for debug mode. Rename the devel logger, debug
 - give names to threads and use them in logging
-- refactoring: move the configurations from const.py to config.py
 - extract version information from the system
 - Make the max number of failures configurable
 - What if MQTT is not available
 - set the urllib timeout
+
+# Refactoring
+
+- use f-strings everywhere
+- all jobs should be created using schedule
+- entity.factory: oekofen specific part should go to oekofen.py
+- move the configurations from const.py to config.py
 
 # Low priority
 
@@ -38,12 +40,12 @@
 ## Needs a valid use case
 
 - use attributes for the sensors
-- send updates on regular basis (after a given period)
+- send updates on regular basis (after a given period) instead of only when it changes
 
 
 ## create all entities disabled
 
-HA allows entities to be disabled. We could create all entities disabled and the user should enable them in HA
+HA allows entities to be disabled. We could create all entities, Ökofen provides, disabled and the user could enable them in HA
 
 - PRO: we do not need to maintain the `monitor` list in the configuration file
 - CONTRA: we will be sending a lot of useless information

@@ -95,9 +95,11 @@ oekofen_ground_floor_roomtemp_act
 
 ### MQTT Topics
 
+#### Entity related topics
+
 We follow the HA guidelines here. 
 
-MQTT topic names have 4 components
+MQTT topic names that contribute to the sensors have 4 components
 
 * the first is `homeassistant`
 * the second is the entity type. This is explained in the section [Which values you want to monitor](#which-values-you-want-to-monitor).
@@ -105,11 +107,27 @@ MQTT topic names have 4 components
 * the fourth is the message type:
   * `config`: contains the latest definition of the HA entity. Messages here are send in retain mode
   * `state`: contains the latest value for the entity. Messages here are send in retain mode
-  * `cmd`: is the topic where HA publishes changes to the Hamök on.
+  * `cmd`: is the topic where HA publishes changes to the Hamök on. These topics are only defined for changeable entities: `switch`, `number` and `select.`
 
 ```
 homeassistant/switch/oekofen/oekofen_ww1_heat_once/state
 ```
+
+#### Connection topic
+
+The connection topic represents the state of the connection to the Ökofen system. The name of the connection topic is
+
+```
+hamok/<normalized_devicename>/connection
+```
+
+The normalized device name, replaces all strange characters by '_'(underscore)
+
+When Hamök starts and makes a first successful connection to the Pellematic, if will publish `online` on the connection topic.
+
+If Hamök cannot reach the Ökofen system, it will retry 5 times. If it is not successful after that, Hamök will publish `offline` on the connection topic before exiting. It will be restarted through `systemd`.
+
+All entities in HA are configured to show unavailable when `offline` is published on the `connection` topic.
 
 ### Changing names
 
