@@ -23,13 +23,14 @@
 - Test the config file errors
 - Make the return codes in on_connect user readable
 - llog.error(f"Disconnecting from broker failed: {e}") should be informational
+- handle forecast
+- parsing option
 
 # Issues
 
-- hamok[12905] ERROR    Failed to connect to MQTT broker at 127.0.0.1:1883 : can't start new thread
 - Oekofen sends true for 1 and false for O
 - if the configuration evaluation fails, a critical error should be emitted
--  llog.error("Failed to subscribe to topics {topics}", should also print error
+- llog.error("Failed to subscribe to topics {topics}", should also print error
 
 # Refactoring
 

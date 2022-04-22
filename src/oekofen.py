@@ -85,7 +85,12 @@ class Oekofen:
             entitylist.add(entityKey, ent)
 
         if ent.enabled:
-            ent.set_okfval(data[VAL])
+            v = data[VAL]
+            if v == "true":
+                v = 1
+            if v == "false":
+                v = 0
+            ent.set_okfval(v)
 
 
     def _parse_subsystem(self, subname: str, data: dict):

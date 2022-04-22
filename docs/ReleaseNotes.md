@@ -12,6 +12,8 @@
 ### Bug Fixes
 
 * Reconnections in calls to publish and subscribe were not needed as they are handle by the MQTT library
+* Reconnections no longer start a new threat
+* True and false values are now recognized as 1 and 0 respectively.
 
 ### Upgrade
 
@@ -24,7 +26,7 @@
 * Device name gets normalized wherever it is used as part of an identifier
 * Hamök exits properly when it can: it closes connections, sends the necessary messages.
 * When Hamök could not execute its functions (no MQTT broker, no Pellematic) it returns an error code.
-* ~~When the connection to the Pellematic fails 5 times the process exits. Note that `systemd` will restart it.~~ Replaced  in 22.6
+* ~~When the connection to the Pellematic fails 5 times the process exits. Note that `systemd` will restart it.~~ Improved  in 22.6
 * Hamök sets the sensors to 'unavailable' if the Pellematic is not reachable, and back to available when it becomes reachable again.
 
 ### Bug fixes
