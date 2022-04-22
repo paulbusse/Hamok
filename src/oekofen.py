@@ -8,6 +8,7 @@ import config
 import llog
 
 from jobs import jobhandler
+from servicestate import servicestate
 from const import (
     ARGUMENTS,
     CALLBACK,
@@ -33,26 +34,24 @@ class Oekofen:
         self._url = 'http://' + host + ':' + str(port) + '/' + pwd + '/'
 
 
-    def load(self, on_success, on_failure):
+    def load(self):
 
-        def oekofen_load(on_success, on_failure):
+        def oekofen_load():
             try:
                 res = urllib.request.urlopen(self._url + 'all?')
                 rdata = res.read()
                 jdata = json.loads(rdata.decode('latin-1'))
                 if jdata:
                     self._parser(jdata)
-                if on_success:
-                    on_success()
+                servicestate.oekofen(True)
 
             except Exception as e:
                 llog.error(f"Loading info from Ökofen failed: {e}.")
-                if on_failure:
-                    on_failure()
+                servicestate.oekofen(False)
 
         jobhandler.schedule({
                 CALLBACK: oekofen_load,
-                ARGUMENTS: [on_success, on_failure]
+                ARGUMENTS: []
             })
 
 

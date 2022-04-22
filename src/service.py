@@ -7,6 +7,7 @@ import llog
 
 from oekofen import oekofenc
 from hamqtt import hamqttc
+from servicestate import servicestate
 from const import COMPONENT, INTERVAL, OFFLINE, ONLINE
 
 def _mqttdisconnect():
@@ -14,7 +15,6 @@ def _mqttdisconnect():
 
 class Service:
     def __init__(self):
-        self._failures = 0
         self._connecttopic = None
         self._firstrun = True
 
@@ -26,36 +26,35 @@ class Service:
         component = config.get(COMPONENT)
         self._connecttopic = f"hamok/{component}/connection"
 
-        hamqttc.configure()
+        hamqttc.configure(self.on_mqttconnect)
         oekofenc.configure()
 
-        hamqttc.connect()
+        while servicestate.ok() and not hamqttc.connect():
+            time.sleep(60) #FIXME make this configurable
+
+        if not servicestate.ok():
+            llog.fatal(f"Could not connect to MQTT Broker.")
+
         atexit.register(_mqttdisconnect)
+
+    def on_mqttconnect(self):
+        hamqttc.publish_value(self._connecttopic, ONLINE)
+        entitylist.create_entities()
+        hamqttc.subscribe()
 
 
     def run(self):
-
-        def on_success():
-            self._failures = 0
-            if self._firstrun:
-                hamqttc.publish_value(self._connecttopic, ONLINE)
-                entitylist.create_entities()
-                hamqttc.subscribe()
-                self._firstrun = False
-
-
-        def on_failure():
-            self._failures += 1
-
         interval = config.get(INTERVAL)
 
-        while self._failures < 5: #FIXME make this configurable
-            oekofenc.load(on_success, on_failure)
+        while servicestate.ok():
+            oekofenc.load()
             time.sleep(interval)
 
-        if self._failures >= 5:
+        if not servicestate.ok():
+            llog.error(servicestate.report())
+
+        if not servicestate.oekofen_ok():
             hamqttc.publish_value(self._connecttopic, OFFLINE)
-            llog.fatal("Pellematic could not be reached 5 times.")
 
 
 servicec = Service()

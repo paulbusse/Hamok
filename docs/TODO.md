@@ -10,19 +10,26 @@
 - upgrade to Python 3.9 and 3.10.
 - detect if hamok runs in virtual env
 - reload config on signal (systemctl?) or use an MQTT topic
-- Validate return codes in callback on connect
-- Validate return codes in callback on publish
-- Validate return codes in callback on subscribe
 - set device class for HA devices
-- on re_connect publish all the available values
 - reverse engineer state bitmap
 - config file through environment variable
 - add option for debug mode. Rename the devel logger, debug
 - give names to threads and use them in logging
 - extract version information from the system
-- Make the max number of failures configurable
-- What if MQTT is not available
+- [23]Make the max number of failures configurable
 - set the urllib timeout
+- MQTT callbacks: make jobs out of the different callbacks
+- With -l option do not start the job_handler (?)
+- Test the config file errors
+- Make the return codes in on_connect user readable
+- llog.error(f"Disconnecting from broker failed: {e}") should be informational
+
+# Issues
+
+- hamok[12905] ERROR    Failed to connect to MQTT broker at 127.0.0.1:1883 : can't start new thread
+- Oekofen sends true for 1 and false for O
+- if the configuration evaluation fails, a critical error should be emitted
+-  llog.error("Failed to subscribe to topics {topics}", should also print error
 
 # Refactoring
 
@@ -30,10 +37,12 @@
 - all jobs should be created using schedule
 - entity.factory: oekofen specific part should go to oekofen.py
 - move the configurations from const.py to config.py
+- create_entity needs to go (back) to entitylist.py
+- move the initial connect to run in service.py
 
 # Low priority
 
-- allow extended clientids
+- allow extended clientids for MQTT
 
 # Under discussion
 
@@ -55,6 +64,10 @@ Solution: make this configurable?
 # Declined Todo's
 
 'No' is an eligible answer. In this section we explain why we won't implement certain things.
+
+## MQTT on exit disconnect
+Sometimes it is just a hickup. In Paho reconnects are automatic. Only if
+we cannot reconnect after a certain amount of time we will exit.
 
 ## disconnect from the terminal
 

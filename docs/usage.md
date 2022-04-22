@@ -125,7 +125,7 @@ The normalized device name, replaces all strange characters by '_'(underscore)
 
 When Hamök starts and makes a first successful connection to the Pellematic, if will publish `online` on the connection topic.
 
-If Hamök cannot reach the Ökofen system, it will retry 5 times. If it is not successful after that, Hamök will publish `offline` on the connection topic before exiting. It will be restarted through `systemd`.
+If Hamök cannot reach the Ökofen system, it will retry for a certain amount of time. If it is not successful after that, Hamök will publish `offline` on the connection topic before exiting. It will be restarted through `systemd`.
 
 All entities in HA are configured to show unavailable when `offline` is published on the `connection` topic.
 
@@ -169,6 +169,18 @@ Some remarks
 * In the MQTT configuration, we do not care about birth and will messages. Note that other MQTT integrations may care.
 * You can assign friendly names to your entity, we do not override them from Hamök.
 * If you want to set the area, you can do this on the device instead of every individual entity.
+
+## Additional functionality
+
+### Exiting rules
+
+The process will exit under the following conditions
+
+* no configuration can be found
+* important errors are found in the configuration file
+* it cannot establish an initial connection with the MQTT broker
+* the connection with MQTT broker is disrupted and cannot be restored within a given timeout
+* it was impossible to retrieve information from the Ökofen system within a given timeout
 
 ## Configuration file
 
@@ -301,3 +313,93 @@ logger: debug
 | `device`               | `Oekofen` | The name of the created device.                              |
 | `clientid`             | `hamok`   | The clientid used with the MQTT broker                       |
 | `logger`               | `default` | The logging level of the MQTT broker                         |
+
+## Logging
+
+These are the critical and errors that you can find in your log and possible resolutions
+
+### Critical
+
+**"Could not connect to MQTT Broker. Exiting"**
+
+The initial connect to the MQTT Broker failed. This error should be preceded by another error, explaining why the connection could not be made. This error only appears during startup.
+
+### Errors
+
+**"No MQTT broker specified."**
+
+The configuration of the MQTT broker is missing. There was no keyword `mqtt`in the configuration file. Hamök will stop running.
+
+**"The host of the Ökofen system is not specified."**
+
+The configuration of the Ökofen system is missing. There was no keyword `oekofen` in the configuration file. Hamök will stop running.
+
+**"The JSON password of the Ökofen system is not specified."**
+
+The `jsonpassword`key in the configuration file is missing. Hamök will stop running.
+
+**"The JSON port of the Ökofen system is not specified."**
+
+The `jsonport`key in the configuration file is missing. Hamök will stop running.
+
+**"You must specify at least one value to monitor."**
+
+The `monitor` list must contain at least one value. Otherwise, running Hamök is quite useless.
+
+**"Configuration of 'interval' does not contain integer. Using default value."**
+
+The value for interval in the configuration file cannot be recognized as an integer.
+
+**"Configuration of 'interval' must be between 0 and 86400. Using default value."**
+
+The value for interval in the configuration file is out of range.
+
+**"The device name may not be empty. Using default value."**
+
+An empty value is specified as device name.
+
+**"The clientid should contain between 1 and 23 alphanumeric characters. Using default value."**
+
+The message says it all.
+
+**"No configuration file specified."**
+
+Hamök cannot find a configuration file.
+
+**"Connecting to broker returned {rc}."**
+
+The MQTT broker refused the connection and the reason is specified in `rc`. 
+
+| **rc** | **Meaning**                |
+| ------ | -------------------------- |
+| 0      | Connection successful      |
+| 1      | incorrect protocol version |
+| 2      | invalid client identifier  |
+| 3      | server unavailable         |
+| 4      | bad username or password   |
+| 5      | not authorized             |
+
+**"Hamok is disconnected from MQTT Broker"**
+
+This happens if after an initial successful connection the broker, Hamök is disconnected. Hamök will retry to reconnect. If the reconnection takes too long, Hamök will exit.
+
+**"Failed to connect to MQTT broker at {host}:{port} : {error}"**
+
+The initial connect fails and the `error` will specify why. If this happens to often a critical error will be raised.
+
+**"Disconnecting from broker failed: {e}"**
+
+This error can safely be ignored.
+
+**"Failed to publish to MQTT topic {topic}: {e} "**
+
+Publishing to the topic failed. This should not happen. Please contact me when  it does.
+
+**"Failed to subscribe to topics {topics}"**
+
+Subscribing to the topics failed. This should not happen. Please contact me when  it does.
+
+**"Loading info from Ökofen failed: {error}."**
+
+While connecting to the Ökofen system an error was detected. If errors are found over a longer period of time the process will stop.
+

@@ -28,18 +28,11 @@ def _help():
     exit()
 
 
-def _list_load_success():
-    entitylist.dump()
-
-
-def _list_load_failure():
-    llog.fatal("No data retrieved from Pellematic.")
-
-
 def _list():
     oekofenc.configure()
-    oekofenc.load(_list_load_success, _list_load_failure)
+    oekofenc.load()
     jobhandler.wait()
+    entitylist.dump()
 
 
 def _print():

@@ -1,5 +1,22 @@
 # Release History
 
+## Version 22.6
+
+### Functionality
+
+* Hamök monitors the MQTT connection and exits if the connection is down for longer than 5 minutes. Note that `systemd` will restart it
+* When the connection to the Pellematic fails longer than 5 minutes the process exits. Note that `systemd` will restart it.
+* Hamök now listens to the return codes of MQTT subscribe and publish commands
+* When Hamök reconnects it resends the definitions and the latest values for the HA sensors. This was not necessary as the latest versions were sent in `retain` mode
+
+### Bug Fixes
+
+* Reconnections in calls to publish and subscribe were not needed as they are handle by the MQTT library
+
+### Upgrade
+
+
+
 ## Version 22.5
 
 ### Functionality
@@ -7,7 +24,7 @@
 * Device name gets normalized wherever it is used as part of an identifier
 * Hamök exits properly when it can: it closes connections, sends the necessary messages.
 * When Hamök could not execute its functions (no MQTT broker, no Pellematic) it returns an error code.
-* When the connection to the Pellematic fails 5 times the process exits. Note that `systemd` will restart it.
+* ~~When the connection to the Pellematic fails 5 times the process exits. Note that `systemd` will restart it.~~ Replaced  in 22.6
 * Hamök sets the sensors to 'unavailable' if the Pellematic is not reachable, and back to available when it becomes reachable again.
 
 ### Bug fixes
