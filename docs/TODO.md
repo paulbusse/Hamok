@@ -23,12 +23,14 @@
 - Test the config file errors
 - Make the return codes in on_connect user readable
 - llog.error(f"Disconnecting from broker failed: {e}") should be informational
-- handle forecast
-- parsing option
+- handle forecast section of ökofen
+- handle weather section of ökofen
+- config: MQTT keepalive
+- config: failure timeout
+- config: time between 2 connects to Ökofen
 
 # Issues
 
-- Oekofen sends true for 1 and false for O
 - if the configuration evaluation fails, a critical error should be emitted
 - llog.error("Failed to subscribe to topics {topics}", should also print error
 

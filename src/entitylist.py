@@ -22,6 +22,11 @@ def dump():
         print("{} [{}/{}]".format(key, entitytype, enabled))
 
 
+def dumpvals():
+    for key in _entities.keys():
+        print(f"{key}: {_entities[key].get_haval()}")
+
+
 def create_entities():
     for ent in _entities.values():
         if ent.enabled:

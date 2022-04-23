@@ -8,6 +8,7 @@
 * When the connection to the Pellematic fails longer than 5 minutes the process exits. Note that `systemd` will restart it.
 * Hamök now listens to the return codes of MQTT subscribe and publish commands
 * When Hamök reconnects it resends the definitions and the latest values for the HA sensors. This was not necessary as the latest versions were sent in `retain` mode
+* Added the -f option to parse a JSON file retrieved from Ökofen. Primarily for testing purposes
 
 ### Bug Fixes
 

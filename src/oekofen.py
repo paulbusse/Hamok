@@ -55,6 +55,17 @@ class Oekofen:
             })
 
 
+    def loadfile(self, file):
+        try:
+            f = open(file, "r")
+        except Exception as e:
+            llog.error(f"Could not open {file}: {e}")
+            return
+
+        jdata = json.load(f)
+        if jdata:
+            self._parser(jdata)
+
 
     def publish_value(self, okfname, val):
         try:
@@ -84,13 +95,12 @@ class Oekofen:
             ent.enabled = entityKey in config.get(MONITOR)
             entitylist.add(entityKey, ent)
 
-        if ent.enabled:
-            v = data[VAL]
-            if v == "true":
-                v = 1
-            if v == "false":
-                v = 0
-            ent.set_okfval(v)
+        v = data[VAL]
+        if v == "true":
+            v = 1
+        if v == "false":
+            v = 0
+        ent.set_okfval(v)
 
 
     def _parse_subsystem(self, subname: str, data: dict):
@@ -108,8 +118,12 @@ class Oekofen:
                 self._parse_entity(subname, name, key, val)
 
 
-    def _parser(self, data: dict) -> dict:
+    def _parser(self, data) -> None:
+        if not data:
+            return
+
         for key, val in data.items():
-            self._parse_subsystem(key, val)
+            if not key in ["forecast", "weather"]:
+                self._parse_subsystem(key, val)
 
 oekofenc = Oekofen()

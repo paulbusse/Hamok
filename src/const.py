@@ -57,7 +57,7 @@ TOPICROOT = 'homeassistant/'
 """ Internal Config keys """
 COMPONENT = "__device"
 
-""" Default Configuration """ # TODO move to config.py
+""" Default Configuration """ #FIXME move to config.py
 DEFAULTCONFIG = {
     CLIENTID: "hamok",
     LOGGER: "default",
@@ -86,7 +86,7 @@ class JobID(enum.Enum):
     SCHEDULE = 3
 
 
-""" LOGGING CONFIG """ # TODO move to config.py
+""" LOGGING CONFIG """ # FIXME move to config.py
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

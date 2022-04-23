@@ -20,9 +20,10 @@ Command line options
 | Option                    | Description                                                  |
 | ------------------------- | ------------------------------------------------------------ |
 | `-h` or `--help`          | prints a help page with a short description of each of the options |
-| `-c` or `--config` <file> | Specify the configuration file. This option is mandatory except with the help option |
+| `-c` or `--config` <file> | Specify the configuration file. This option is mandatory except with the help and the file option |
 | `-p` or `--print`         | Prints the configuration that will be used. It includes all the defaults. This option is there for debugging purposes. The process will exit after the printing the configuration. |
 | `-l` or `--list`          | Prints a list of all available entities for your system and exits. See below in the configuration section how this is useful. |
+| `-f` or `--file` <file>   | It parses the file and prints all the elements in the file and the value. If `config` option is silently ignored. |
 
 Examples:
 
@@ -39,6 +40,7 @@ The list of values you want to monitor, depends
 
 * on the appliances that you added to your system
 * how the system is configured
+* the `forecast` and `weather` sections are skipped
 
 The list of available monitors can be found by executing
 

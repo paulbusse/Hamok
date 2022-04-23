@@ -4,6 +4,7 @@ import sys
 import signal
 
 import config
+from const import COMPONENT
 import entitylist
 import llog
 
@@ -13,20 +14,28 @@ from jobs import jobhandler
 
 
 
-options = "c:hlp"
-longoptions = ["config=", "help", "list", "print"]
+options = "c:f:hlp"
+longoptions = ["config=", "file=", "help", "list", "print"]
 
 configfile = None
+parsefile = None
 
 def _help():
-    print("okofenmqtt options:")
+    print("hamok options:")
     print("  -c <file> | --config <file>: configuration file")
+    print("  -f <file> | --file <file>: parse file and exit")
     print("  -l | --list: list all available entities.")
     print("  -p | --print: print the current configuration")
     print("  -h | --help: print this help")
     print("You must specify a configuration file")
     exit()
 
+def _file():
+    global parsefile
+    llog.changeLogger("devel")
+    config.set(COMPONENT, "default")
+    oekofenc.loadfile(parsefile)
+    entitylist.dumpvals()
 
 def _list():
     oekofenc.configure()
@@ -51,7 +60,7 @@ def _service():
 
 
 def _handleOptions():
-    global configfile
+    global configfile, parsefile
     executor = _service
     try:
         arguments, values = getopt.getopt(sys.argv[1:], options, longoptions)
@@ -66,7 +75,12 @@ def _handleOptions():
                 continue
 
             if opt in ["-c", "--config"]:
-                configfile = val;
+                configfile = val
+                continue
+
+            if opt in ["-f", "--file"]:
+                parsefile = val
+                executor = _file
                 continue
 
             if opt in ["-h", "--help"]:
@@ -77,6 +91,7 @@ def _handleOptions():
         _help()
 
     return executor
+
 
 def _exitlog():
     llog.info("Exiting process")
@@ -110,11 +125,12 @@ def _set_sighandler():
 def main():
     executor = _handleOptions()
 
-    if configfile is None:
-        llog.error("No configuration file specified.")
-        _help()
+    if executor != _file:
+        if configfile is None :
+            llog.error("No configuration file specified.")
+            _help()
 
-    config.load(configfile)
+        config.load(configfile)
 
     executor()
 
