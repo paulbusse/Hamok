@@ -4,13 +4,28 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
         {
             "name": "hamok list",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/hamok.py",
             "args": ["-l", "-c", "config.yaml"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "hamok bad config",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/hamok.py",
+            "args": ["-p", "-c", "test/badconfigs/nomqtt.yaml"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "hamok help",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/hamok.py",
+            "args": ["-h"],
             "console": "integratedTerminal"
         },
         {

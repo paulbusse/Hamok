@@ -186,7 +186,7 @@ The process will exit under the following conditions
 
 ## Configuration file
 
-The configuration file is a YAML file. Which means that indentation is important. Here is an overview of the configuration file.
+The configuration file is a YAML file. Which means that indentation is important. Here is an overview of the configuration file. If a mandatory field in the configuration file is missing, the service exits.
 
 Besides these values, other keys may be entered in the configuration file but they will be ignored, silently.
 
@@ -322,11 +322,25 @@ These are the critical and errors that you can find in your log and possible res
 
 ### Critical
 
+**"Configuration file is inconsistent. See previous errors."**
+
+Parsing the configuration files gave errors that prevented the service to start. Use the -p option to validate the configuration file.
+
+**"Fatal error in command line options."**
+
+Bad options in the configuration file. This document and the small help printed on output should help you to diagnose the problem.
+
+**"No configuration file specified."**
+
+The mandatory configuration option was not given.
+
 **"Could not connect to MQTT Broker. Exiting"**
 
 The initial connect to the MQTT Broker failed. This error should be preceded by another error, explaining why the connection could not be made. This error only appears during startup.
 
 ### Errors
+
+
 
 **"No MQTT broker specified."**
 
@@ -360,13 +374,13 @@ The value for interval in the configuration file is out of range.
 
 An empty value is specified as device name.
 
+**"The client id should only contain alphanumeric characters. Using default value"**
+
+The MQTT clientid consists of a maximum of 23 alphanumeric characters.
+
 **"The clientid should contain between 1 and 23 alphanumeric characters. Using default value."**
 
-The message says it all.
-
-**"No configuration file specified."**
-
-Hamök cannot find a configuration file.
+The MQTT clientid consists of a maximum of 23 alphanumeric characters.
 
 **"Connecting to broker returned {rc}."**
 
@@ -405,3 +419,16 @@ Subscribing to the topics failed. This should not happen. Please contact me when
 
 While connecting to the Ökofen system an error was detected. If errors are found over a longer period of time the process will stop.
 
+**"Could not open {file}: {error}"**
+
+The attribute to the -f option cannot be read; the error specifies why.
+
+**"Service state: MQTT: {state} - Oekofen: {state}"**
+
+When Hamök exits because of issues. The state is
+
+* green: if no issues where detected.
+* amber: if issues where detected but Hamök considers them recoverable.
+* red: this subsystem is causing Hamök to exit.
+
+One of the state must show red.

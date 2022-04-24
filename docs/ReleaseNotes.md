@@ -15,6 +15,7 @@
 * Reconnections in calls to publish and subscribe were not needed as they are handle by the MQTT library
 * Reconnections no longer start a new threat
 * True and false values are now recognized as 1 and 0 respectively.
+* If the configuration is inconsistent, the service is stopped.
 
 ### Upgrade
 

@@ -4,7 +4,7 @@ import sys
 import signal
 
 import config
-from const import COMPONENT
+from const import COMPONENT, LOGGER
 import entitylist
 import llog
 
@@ -27,8 +27,7 @@ def _help():
     print("  -l | --list: list all available entities.")
     print("  -p | --print: print the current configuration")
     print("  -h | --help: print this help")
-    print("You must specify a configuration file")
-    exit()
+
 
 def _file():
     global parsefile
@@ -49,7 +48,6 @@ def _print():
     exit()
 
 def _service():
-
     servicec.configure()
     _set_sighandler()
 
@@ -84,11 +82,11 @@ def _handleOptions():
                 continue
 
             if opt in ["-h", "--help"]:
-                _help()
+                executor = _help
 
     except getopt.error as err:
-        print (str(err))
-        _help()
+        atexit.register(_help)
+        llog.fatal(f"Fatal error in command line options.")
 
     return executor
 
@@ -125,12 +123,13 @@ def _set_sighandler():
 def main():
     executor = _handleOptions()
 
-    if executor != _file:
+    if not executor in [_file, _help]:
         if configfile is None :
-            llog.error("No configuration file specified.")
-            _help()
+            atexit.register(_help)
+            llog.fatal("No configuration file specified.")
 
-        config.load(configfile)
+        interactive = executor != _service
+        config.load(configfile, interactive)
 
     executor()
 

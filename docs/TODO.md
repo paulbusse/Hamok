@@ -6,7 +6,6 @@
     - requires will message
 - more secure usage of MQTT
 - validate that all monitors in the list exist
-- delete monitors in HA that are no longer configured, by deleting the corresponding topics
 - upgrade to Python 3.9 and 3.10.
 - detect if hamok runs in virtual env
 - reload config on signal (systemctl?) or use an MQTT topic
@@ -31,7 +30,7 @@
 
 # Issues
 
-- if the configuration evaluation fails, a critical error should be emitted
+
 - llog.error("Failed to subscribe to topics {topics}", should also print error
 
 # Refactoring
@@ -39,13 +38,13 @@
 - use f-strings everywhere
 - all jobs should be created using schedule
 - entity.factory: oekofen specific part should go to oekofen.py
-- move the configurations from const.py to config.py
 - create_entity needs to go (back) to entitylist.py
 - move the initial connect to run in service.py
 
 # Low priority
 
 - allow extended clientids for MQTT
+- delete monitors in HA that are no longer configured, by deleting the corresponding topics (there is a description in the docs that explains how to do this)
 
 # Under discussion
 
