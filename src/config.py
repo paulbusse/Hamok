@@ -16,6 +16,7 @@ from const import (
     LOGGER,
     MONITOR,
     MQTT,
+    MQTTDEBUG,
     MQTTHOST,
     MQTTPORT,
     OEKOFEN,
@@ -34,7 +35,8 @@ _defaultconfig = {
     },
     MONITOR: [],
     INTERVAL: 60,
-    DEVICE: "Oekofen"
+    DEVICE: "Oekofen",
+    MQTTDEBUG: False,
 }
 
 _config = {}

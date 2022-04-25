@@ -299,7 +299,15 @@ Hamök has 3 logging modes.
 logger: debug
 ```
 
+**Mqttdebug**
 
+Turn on specific MQTT debugging. All messages are printed at the debug level. This means that if the `logging` is set to `default` no messages will be visible. The default value is `off`
+
+Valid values are:
+
+* `off | no | false | 0` to turn the debugging off. This is the default.
+* `on | yes | true | 1`  to turn the debugging on.
+* Any value that is not in the list above will have uncertain behavior.
 
 **<u>Overview</u>**
 
@@ -314,7 +322,8 @@ logger: debug
 | `interval`             | 60        | The number of seconds between 2 requests. A value between 1 and 86400. |
 | `device`               | `Oekofen` | The name of the created device.                              |
 | `clientid`             | `hamok`   | The clientid used with the MQTT broker                       |
-| `logger`               | `default` | The logging level of the MQTT broker                         |
+| `logger`               | `default` | The logging configuration of Hamök                           |
+| mqttdebug              | `off`     | The specific MQTT debugging info is turned off.              |
 
 ## Logging
 

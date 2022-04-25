@@ -11,6 +11,7 @@ from servicestate import servicestate
 from const import (
     CLIENTID,
     MQTT,
+    MQTTDEBUG,
     MQTTHOST,
     MQTTPORT,
 )
@@ -41,6 +42,7 @@ class Mqttc:
         self._host = cfg[MQTTHOST]
         self._port = cfg[MQTTPORT]
         self._connectcallback = callback
+        self._debug = config.get(MQTTDEBUG)
 
         self._client = mqtt.Client(self._clientid)
         self._client._keepalive = 60 #FIXME: make this configurable
@@ -54,7 +56,7 @@ class Mqttc:
 
 
     def on_log(self, client, userdata, level, buf):
-        if False:
+        if self._debug:
             llog.debug(buf)
 
     def on_connect(self, client, userdata, flags, rc):

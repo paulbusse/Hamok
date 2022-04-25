@@ -1,5 +1,3 @@
-import sys
-import logging
 import enum
 
 """
@@ -17,6 +15,7 @@ INTERVAL = "interval"
 DEVICE = "device"
 CLIENTID = "clientid"
 LOGGER= "logger"
+MQTTDEBUG = "mqttdebug"
 
 """ Entity Types """
 BINARYSENSOR = "binary_sensor"
