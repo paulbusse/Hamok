@@ -79,7 +79,7 @@ def validate(interactive):
     if not interactive:
         llog.changeLogger(_config.get(LOGGER))
 
-    if _config[MQTT][MQTTHOST] is None:
+    if _config[MQTT].get(MQTTHOST, None) is None:
         llog.error("No MQTT broker specified.")
         fatal = True
 
@@ -122,9 +122,8 @@ def validate(interactive):
         llog.error("The clientid should contain between 1 and 23 alphanumeric characters. Using default value.")
         _config[CLIENTID] = _defaultconfig[CLIENTID]
 
-
-
     if fatal:
         llog.fatal(f"Configuration file is inconsistent. See previous errors.")
+
 
 update( _config, _defaultconfig)

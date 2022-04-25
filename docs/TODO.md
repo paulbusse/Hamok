@@ -30,12 +30,8 @@
 
 # Issues
 
-
-- llog.error("Failed to subscribe to topics {topics}", should also print error
-
 # Refactoring
 
-- use f-strings everywhere
 - all jobs should be created using schedule
 - entity.factory: oekofen specific part should go to oekofen.py
 - create_entity needs to go (back) to entitylist.py

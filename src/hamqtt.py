@@ -61,7 +61,7 @@ class Mqttc:
         self._connected = True
         self._gotcallback = True
         if rc != 0:
-            llog.error("Connecting to broker returned {}.".format(rc))
+            llog.error(f"Connecting to broker returned {rc}.")
             self._connected = False
 
         servicestate.mqtt(self._connected)
@@ -79,7 +79,7 @@ class Mqttc:
         servicestate.mqtt(True)
         payload = message.payload.decode('utf-8')
         topic = message.topic
-        llog.info("Received {} from {}".format(payload, topic))
+        llog.info(f"Received {payload} from {topic}.")
         entity = self._subscriptions[topic]
         entity.set_haval(payload)
 
@@ -99,7 +99,7 @@ class Mqttc:
         try:
             ret = self._client.connect(self._host,self._port)
         except Exception as e:
-            llog.error("Failed to connect to MQTT broker at {}:{} : {}".format(self._host, self._port, e))
+            llog.error(f"Failed to connect to MQTT broker at {self._host}:{self._port} : {e}.")
             servicestate.mqtt(False)
             return False
 
@@ -110,7 +110,7 @@ class Mqttc:
             time.sleep(0.1)
 
         if(self._connected):
-            llog.info("Connected to MQTT broker at {}:{} as {}.".format(self._host, self._port, self._clientid))
+            llog.info(f"Connected to MQTT broker at {self._host}:{self._port} as {self._clientid}.")
 
         return self._connected
 
@@ -140,9 +140,9 @@ class Mqttc:
         try:
             ret = self._client.publish(topic, payload=data, qos=1, retain=True)
         except Exception as e:
-            llog.error(f"Failed to publish to MQTT topic {topic}: {e} ".format(topic, e))
+            llog.error(f"Failed to publish to MQTT topic {topic}: {e}.")
             exit()
-        llog.info("Defining a new entity for {}[Mid:{}].".format(entity.name, ret.mid))
+        llog.info(f"Defining a new entity for {entity.name}[Mid:{ret.mid}].")
 
         ct = entity.cmdtopic
         if ct:
@@ -164,9 +164,9 @@ class Mqttc:
         try:
             ret = self._client.subscribe(pmtopics)
         except Exception as e:
-            llog.error("Failed to subscribe to topics {}: ".format(topics, e))
+            llog.error(f"Failed to subscribe to topics {topics.keys()}: {e}.")
             exit()
-        llog.info("Subscribing to topics: {}[Mid:{}].".format(list(topics.keys()), ret[1]))
+        llog.info(f"Subscribing to topics: {list(topics.keys())}[Mid:{ret[1]}].")
 
 
 hamqttc = Mqttc()

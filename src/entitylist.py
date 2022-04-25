@@ -19,7 +19,7 @@ def dump():
             enabled = 'enabled'
         else:
             enabled = 'disabled'
-        print("{} [{}/{}]".format(key, entitytype, enabled))
+        print(f"{key} [{entitytype}/{enabled}]")
 
 
 def dumpvals():

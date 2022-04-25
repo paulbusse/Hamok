@@ -67,11 +67,11 @@ def changeLogger(l):
     global logger
 
     if not l in LOGGING["loggers"].keys():
-        logger.error("{} is not a known logger setting. Using 'default'.".format(l))
+        logger.error(f"{l} is not a known logger setting. Using 'default'.")
         l = "default"
 
     logger = logging.getLogger(l)
-    logger.debug("Now using {} logger.".format(l))
+    logger.debug(f"Now using {l} logger.")
 
 def debug(s):
     logger.debug(s)

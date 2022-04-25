@@ -407,11 +407,11 @@ The initial connect fails and the `error` will specify why. If this happens to o
 
 This error can safely be ignored.
 
-**"Failed to publish to MQTT topic {topic}: {e} "**
+**"Failed to publish to MQTT topic {topic}: {error}."**
 
 Publishing to the topic failed. This should not happen. Please contact me when  it does.
 
-**"Failed to subscribe to topics {topics}"**
+**"Failed to subscribe to topics {topics}: {error}."**
 
 Subscribing to the topics failed. This should not happen. Please contact me when  it does.
 
