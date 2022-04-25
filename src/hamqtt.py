@@ -160,6 +160,9 @@ class Mqttc:
 
     def subscribe(self):
         topics = self._subscriptions
+        if len(topics) == 0:
+            return
+
         pmtopics = list(map( lambda x: (x,0), topics))
         try:
             ret = self._client.subscribe(pmtopics)
