@@ -34,7 +34,7 @@ class Oekofen:
         self._url = 'http://' + host + ':' + str(port) + '/' + pwd + '/'
 
 
-    def load(self):
+    def load(self, launchjob = True):
 
         def oekofen_load():
             try:
@@ -44,16 +44,22 @@ class Oekofen:
                 if jdata:
                     self._parser(jdata)
                 servicestate.oekofen(True)
+                return True
 
             except Exception as e:
                 llog.error(f"Loading info from Ökofen failed: {e}.")
                 servicestate.oekofen(False)
 
-        jobhandler.schedule({
-                CALLBACK: oekofen_load,
-                ARGUMENTS: []
-            })
+            return False
 
+        if launchjob:
+            jobhandler.schedule({
+                    CALLBACK: oekofen_load,
+                    ARGUMENTS: []
+                })
+            return True
+        else:
+            return oekofen_load()
 
     def loadfile(self, file):
         try:

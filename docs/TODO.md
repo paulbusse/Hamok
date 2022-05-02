@@ -6,13 +6,13 @@
     - requires will message
 - more secure usage of MQTT
 - validate that all monitors in the list exist
-- upgrade to Python 3.9 and 3.10.
+- upgrade to Python 3.9
+- upgrade to Python 3.10.
 - detect if hamok runs in virtual env
 - reload config on signal (systemctl?) or use an MQTT topic
 - set device class for HA devices
 - reverse engineer state bitmap
 - config file through environment variable
-- add option for debug mode. Rename the devel logger, debug
 - give names to threads and use them in logging
 - extract version information from the system
 - [23]Make the max number of failures configurable
@@ -21,7 +21,6 @@
 - With -l option do not start the job_handler (?)
 - Test the config file errors
 - Make the return codes in on_connect user readable
-- llog.error(f"Disconnecting from broker failed: {e}") should be informational
 - handle forecast section of ökofen
 - handle weather section of ökofen
 - config: MQTT keepalive

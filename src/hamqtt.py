@@ -69,7 +69,8 @@ class Mqttc:
         servicestate.mqtt(self._connected)
 
         if self._connected:
-            self._connectcallback()
+            if self._connectcallback():
+                self._connectcallback()
 
 
     def on_disconnect(self, client, userdata, rc):
