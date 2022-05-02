@@ -1,5 +1,3 @@
-import enum
-
 """
 Keys from the public configuration file
 """
@@ -58,11 +56,5 @@ COMPONENT = "__device"
 
 
 """ JOB IDS"""
-JOBID = "jobid"
-ENTITY = "entity"
-PAYLOAD = "payload"
 CALLBACK = "callback"
 ARGUMENTS = "arguments"
-class JobID(enum.Enum):
-    UPDATE = 2
-    SCHEDULE = 3

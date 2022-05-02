@@ -16,39 +16,48 @@ def _mqttdisconnect():
 class Service:
     def __init__(self):
         self._connecttopic = None
-        self._firstrun = True
+        self._booting = True
 
     @property
     def connecttopic(self):
         return self._connecttopic
 
+
+    def _on_connect(self):
+        if not self._booting:
+            hamqttc.publish_value(self._connecttopic, ONLINE)
+            entitylist.create_entities()
+            hamqttc.subscribe()
+
+
     def configure(self):
         component = config.get(COMPONENT)
         self._connecttopic = f"hamok/{component}/connection"
-
-        hamqttc.configure(self.on_mqttconnect)
+        hamqttc.configure(self._on_connect)
         oekofenc.configure()
-
-        while servicestate.ok() and not hamqttc.connect():
-            time.sleep(60) #FIXME make this configurable
-
-        if not servicestate.ok():
-            llog.fatal(f"Could not connect to MQTT Broker.")
-
-        atexit.register(_mqttdisconnect)
-
-    def on_mqttconnect(self):
-        hamqttc.publish_value(self._connecttopic, ONLINE)
-        entitylist.create_entities()
-        hamqttc.subscribe()
 
 
     def run(self):
         interval = config.get(INTERVAL)
 
-        while servicestate.ok():
-            oekofenc.load()
+        mqttc = hamqttc.connect()
+        okfl  = oekofenc.load(False)
+        while servicestate.ok() and not mqttc and not okfl:
             time.sleep(interval)
+            mqttc = hamqttc.connect()
+            okfl  = oekofenc.load(False)
+
+        if not servicestate.ok():
+            llog.fatal(servicestate.report())
+
+        self._booting = False
+        self._on_connect()
+
+        atexit.register(_mqttdisconnect)
+
+        while servicestate.ok():
+            time.sleep(interval)
+            oekofenc.load()
 
         if not servicestate.ok():
             llog.error(servicestate.report())
