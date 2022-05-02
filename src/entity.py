@@ -110,7 +110,8 @@ class BaseEntity(object):
             self._value = v
         elif v != self._value:
             self._value = v
-            hamqttc.publish_value(self.statetopic, self.get_haval())
+            if self._enabled:
+                hamqttc.publish_value(self.statetopic, self.get_haval())
 
     def get_haval(self):
         return self._value
@@ -156,7 +157,7 @@ class SelectSensorEntity(BaseEntity):
         self._options = self._split(data[FORMAT])
 
     def set_okfval(self, v):
-        super().set_okfval(self._options[v])
+        super().set_okfval(self._options[int(v)])
 
     @property
     def options(self):
@@ -251,11 +252,11 @@ class NumberEntity(NumberSensorEntity, ReadWriteEntity):
         super().__init__(entitytype, systemname, attribute, systemlabel, data)
 
         if MINIMUM in data.keys():
-            self._min = data[MINIMUM] * self._factor
-            self._max = data[MAXIMUM] * self._factor
+            self._min = int(data[MINIMUM]) * self._factor
+            self._max = int(data[MAXIMUM]) * self._factor
         else:
-            self._min = ""
-            self._max = ""
+            self._min = None
+            self._max = None
 
     def get_okfval(self):
         return f"{self._value / self._factor:.0f}"

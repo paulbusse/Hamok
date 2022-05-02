@@ -7,6 +7,7 @@ import llog
 
 from oekofen import oekofenc
 from hamqtt import hamqttc
+from servicestate import servicestate
 from const import COMPONENT, INTERVAL, OFFLINE, ONLINE
 
 def _mqttdisconnect():
@@ -14,48 +15,55 @@ def _mqttdisconnect():
 
 class Service:
     def __init__(self):
-        self._failures = 0
         self._connecttopic = None
-        self._firstrun = True
+        self._booting = True
 
     @property
     def connecttopic(self):
         return self._connecttopic
 
+
+    def _on_connect(self):
+        if not self._booting:
+            hamqttc.publish_value(self._connecttopic, ONLINE)
+            entitylist.create_entities()
+            hamqttc.subscribe()
+
+
     def configure(self):
         component = config.get(COMPONENT)
         self._connecttopic = f"hamok/{component}/connection"
-
-        hamqttc.configure()
+        hamqttc.configure(self._on_connect)
         oekofenc.configure()
-
-        hamqttc.connect()
-        atexit.register(_mqttdisconnect)
 
 
     def run(self):
-
-        def on_success():
-            self._failures = 0
-            if self._firstrun:
-                hamqttc.publish_value(self._connecttopic, ONLINE)
-                entitylist.create_entities()
-                hamqttc.subscribe()
-                self._firstrun = False
-
-
-        def on_failure():
-            self._failures += 1
-
         interval = config.get(INTERVAL)
 
-        while self._failures < 5: #FIXME make this configurable
-            oekofenc.load(on_success, on_failure)
+        mqttc = hamqttc.connect()
+        okfl  = oekofenc.load(False)
+        while servicestate.ok() and not mqttc and not okfl:
             time.sleep(interval)
+            mqttc = hamqttc.connect()
+            okfl  = oekofenc.load(False)
 
-        if self._failures >= 5:
+        if not servicestate.ok():
+            llog.fatal(servicestate.report())
+
+        self._booting = False
+        self._on_connect()
+
+        atexit.register(_mqttdisconnect)
+
+        while servicestate.ok():
+            time.sleep(interval)
+            oekofenc.load()
+
+        if not servicestate.ok():
+            llog.error(servicestate.report())
+
+        if not servicestate.oekofen_ok():
             hamqttc.publish_value(self._connecttopic, OFFLINE)
-            llog.fatal("Pellematic could not be reached 5 times.")
 
 
 servicec = Service()

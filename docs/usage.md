@@ -20,9 +20,10 @@ Command line options
 | Option                    | Description                                                  |
 | ------------------------- | ------------------------------------------------------------ |
 | `-h` or `--help`          | prints a help page with a short description of each of the options |
-| `-c` or `--config` <file> | Specify the configuration file. This option is mandatory except with the help option |
+| `-c` or `--config` <file> | Specify the configuration file. This option is mandatory except with the help and the file option |
 | `-p` or `--print`         | Prints the configuration that will be used. It includes all the defaults. This option is there for debugging purposes. The process will exit after the printing the configuration. |
 | `-l` or `--list`          | Prints a list of all available entities for your system and exits. See below in the configuration section how this is useful. |
+| `-f` or `--file` <file>   | It parses the file and prints all the elements in the file and the value. If `config` option is silently ignored. |
 
 Examples:
 
@@ -39,6 +40,7 @@ The list of values you want to monitor, depends
 
 * on the appliances that you added to your system
 * how the system is configured
+* the `forecast` and `weather` sections are skipped
 
 The list of available monitors can be found by executing
 
@@ -97,7 +99,7 @@ oekofen_ground_floor_roomtemp_act
 
 #### Entity related topics
 
-We follow the HA guidelines here. 
+We follow the HA guidelines here.
 
 MQTT topic names that contribute to the sensors have 4 components
 
@@ -125,7 +127,7 @@ The normalized device name, replaces all strange characters by '_'(underscore)
 
 When Hamök starts and makes a first successful connection to the Pellematic, if will publish `online` on the connection topic.
 
-If Hamök cannot reach the Ökofen system, it will retry 5 times. If it is not successful after that, Hamök will publish `offline` on the connection topic before exiting. It will be restarted through `systemd`.
+If Hamök cannot reach the Ökofen system, it will retry for a certain amount of time. If it is not successful after that, Hamök will publish `offline` on the connection topic before exiting. It will be restarted through `systemd`.
 
 All entities in HA are configured to show unavailable when `offline` is published on the `connection` topic.
 
@@ -152,7 +154,7 @@ When the MQTT topic changes HA may get confused and show errors like
 Platform mqtt does not generate unique IDs. ID oekofen_system_L_usb_stick already exists - ignoring binary_sensor.oekofen_system_usb_stick
 ```
 
-This usually means that there are 2 MQTT topics trying to create devices with the same ID. It means that you have to cleanup the retained MQTT messages. 
+This usually means that there are 2 MQTT topics trying to create devices with the same ID. It means that you have to cleanup the retained MQTT messages.
 
 The preferred way, to do is to remove the unneeded topics. Install a tool like [MQTT Explorer](http://mqtt-explorer.com/) and find the topics causing the issue and remove them. If you remove one to many, do not worry, restart hamok and they will reappear.
 
@@ -170,9 +172,21 @@ Some remarks
 * You can assign friendly names to your entity, we do not override them from Hamök.
 * If you want to set the area, you can do this on the device instead of every individual entity.
 
+## Additional functionality
+
+### Exiting rules
+
+The process will exit under the following conditions
+
+* no configuration can be found
+* important errors are found in the configuration file
+* it cannot establish an initial connection with the MQTT broker
+* the connection with MQTT broker is disrupted and cannot be restored within a given timeout
+* it was impossible to retrieve information from the Ökofen system within a given timeout
+
 ## Configuration file
 
-The configuration file is a YAML file. Which means that indentation is important. Here is an overview of the configuration file.
+The configuration file is a YAML file. Which means that indentation is important. Here is an overview of the configuration file. If a mandatory field in the configuration file is missing, the service exits.
 
 Besides these values, other keys may be entered in the configuration file but they will be ignored, silently.
 
@@ -285,19 +299,143 @@ Hamök has 3 logging modes.
 logger: debug
 ```
 
+**Mqttdebug**
 
+Turn on specific MQTT debugging. All messages are printed at the debug level. This means that if the `logging` is set to `default` no messages will be visible. The default value is `off`
+
+Valid values are:
+
+* `off | no | false | 0` to turn the debugging off. This is the default.
+* `on | yes | true | 1`  to turn the debugging on.
+* Any value that is not in the list above will have uncertain behavior.
 
 **<u>Overview</u>**
 
-| key                    | default   | description                                                  |
-| ---------------------- | --------- | ------------------------------------------------------------ |
-| `mqtt.broker`          | -         | Mandatory field. Host where the MQTT broker runs             |
-| `mqtt.port`            | 1883      | Port on which the MQTT broker listens.                       |
-| `oekofen.host`         | -         | Mandatory field. IP address of the Ökofen system. This may be a host name if that works for you |
-| `oekofen.jsonport`     | -         | Mandatory field. The JSON port retrieved from the Ökofen system. |
-| `oekofen.jsonpassword` | -         | Mandatory field. The JSON password retrieved from the Ökofen system |
-| `monitor`              | -         | Mandatory field. A list of values to monitor. Must contain at least one value. |
-| `interval`             | 60        | The number of seconds between 2 requests. A value between 1 and 86400. |
-| `device`               | `Oekofen` | The name of the created device.                              |
-| `clientid`             | `hamok`   | The clientid used with the MQTT broker                       |
-| `logger`               | `default` | The logging level of the MQTT broker                         |
+| key                    | Version | default   | description                                                  |
+| ---------------------- | :-----: | --------- | ------------------------------------------------------------ |
+| `mqtt.broker`          |    -    | -         | Mandatory field. Host where the MQTT broker runs             |
+| `mqtt.port`            |    -    | 1883      | Port on which the MQTT broker listens.                       |
+| `oekofen.host`         |    -    | -         | Mandatory field. IP address of the Ökofen system. This may be a host name if that works for you |
+| `oekofen.jsonport`     |    -    | -         | Mandatory field. The JSON port retrieved from the Ökofen system. |
+| `oekofen.jsonpassword` |    -    | -         | Mandatory field. The JSON password retrieved from the Ökofen system |
+| `monitor`              |    -    | -         | Mandatory field. A list of values to monitor. Must contain at least one value. |
+| `interval`             |    -    | 60        | The number of seconds between 2 requests. A value between 1 and 86400. |
+| `device`               |    -    | `Oekofen` | The name of the created device.                              |
+| `clientid`             |    -    | `hamok`   | The clientid used with the MQTT broker                       |
+| `mqttdebug`            |  22.6   | `off`     | Turns specific MQTT debugging on or off                      |
+## Logging
+
+These are the critical and errors that you can find in your log and possible resolutions
+
+### Critical
+
+**"Configuration file is inconsistent. See previous errors."**
+
+Parsing the configuration files gave errors that prevented the service to start. Use the -p option to validate the configuration file.
+
+**"Fatal error in command line options."**
+
+Bad options in the configuration file. This document and the small help printed on output should help you to diagnose the problem.
+
+**"No configuration file specified."**
+
+The mandatory configuration option was not given.
+
+**"Could not connect to MQTT Broker. Exiting"**
+
+The initial connect to the MQTT Broker failed. This error should be preceded by another error, explaining why the connection could not be made. This error only appears during startup.
+
+### Errors
+
+
+
+**"No MQTT broker specified."**
+
+The configuration of the MQTT broker is missing. There was no keyword `mqtt`in the configuration file. Hamök will stop running.
+
+**"The host of the Ökofen system is not specified."**
+
+The configuration of the Ökofen system is missing. There was no keyword `oekofen` in the configuration file. Hamök will stop running.
+
+**"The JSON password of the Ökofen system is not specified."**
+
+The `jsonpassword`key in the configuration file is missing. Hamök will stop running.
+
+**"The JSON port of the Ökofen system is not specified."**
+
+The `jsonport`key in the configuration file is missing. Hamök will stop running.
+
+**"You must specify at least one value to monitor."**
+
+The `monitor` list must contain at least one value. Otherwise, running Hamök is quite useless.
+
+**"Configuration of 'interval' does not contain integer. Using default value."**
+
+The value for interval in the configuration file cannot be recognized as an integer.
+
+**"Configuration of 'interval' must be between 0 and 86400. Using default value."**
+
+The value for interval in the configuration file is out of range.
+
+**"The device name may not be empty. Using default value."**
+
+An empty value is specified as device name.
+
+**"The client id should only contain alphanumeric characters. Using default value"**
+
+The MQTT clientid consists of a maximum of 23 alphanumeric characters.
+
+**"The clientid should contain between 1 and 23 alphanumeric characters. Using default value."**
+
+The MQTT clientid consists of a maximum of 23 alphanumeric characters.
+
+**"Connecting to broker returned {rc}."**
+
+The MQTT broker refused the connection and the reason is specified in `rc`.
+
+| **rc** | **Meaning**                |
+| ------ | -------------------------- |
+| 0      | Connection successful      |
+| 1      | incorrect protocol version |
+| 2      | invalid client identifier  |
+| 3      | server unavailable         |
+| 4      | bad username or password   |
+| 5      | not authorized             |
+
+**"Hamok is disconnected from MQTT Broker"**
+
+This happens if after an initial successful connection the broker, Hamök is disconnected. Hamök will retry to reconnect. If the reconnection takes too long, Hamök will exit.
+
+**"Failed to connect to MQTT broker at {host}:{port} : {error}"**
+
+The initial connect fails and the `error` will specify why. If this happens to often a critical error will be raised.
+
+**"Disconnecting from broker failed: {e}"**
+
+This error can safely be ignored.
+
+**"Failed to publish to MQTT topic {topic}: {error}."**
+
+Publishing to the topic failed. This should not happen. Please contact me when  it does.
+
+**"Failed to subscribe to topics {topics}: {error}."**
+
+Subscribing to the topics failed. This should not happen. Please contact me when  it does.
+
+**"Loading info from Ökofen failed: {error}."**
+
+While connecting to the Ökofen system an error was detected. If errors are found over a longer period of time the process will stop.
+
+**"Could not open {file}: {error}"**
+
+The attribute to the -f option cannot be read; the error specifies why.
+
+**"Service state: MQTT: {state} - Oekofen: {state}"**
+
+When Hamök exits because of issues. The state is
+
+* green: if no issues where detected.
+* amber: if issues where detected but Hamök considers them recoverable.
+* red: this subsystem is causing Hamök to exit.
+
+One of the state must show red.

@@ -13,7 +13,7 @@ oekofen:
   jsonport: <Ökofen JSON port
   jsonpassword: <Ökofen JSON password>
 
-# Monitors to create. To find the values you can put here 
+# Monitors to create. To find the values you can put here
 # use the --list option.
 
 monitor:
@@ -29,7 +29,7 @@ monitor:
 # interval: 60
 
 # The name of the device in Home Assistant
-# If you want to connect multiple instance of Ökofen heating systems 
+# If you want to connect multiple instance of Ökofen heating systems
 # (i.e. 2 different connections) to the same Home Assistant, you must
 # run two different instances of hamok
 # device: Oekofen
@@ -43,3 +43,7 @@ monitor:
 #   debug: more info in production
 #   devel: as debug but also on the screen
 # logger: default
+
+# Mqttdebug allows detailed debugging on the MQTT connection.
+# The default value is off.
+# mqttdebug: off

@@ -13,6 +13,30 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "hamok bad config",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/hamok.py",
+            "args": ["-p", "-c", "test/badconfigs/nomqtt.yaml"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "hamok help",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/hamok.py",
+            "args": ["-h"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "hamok parse",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/hamok.py",
+            "args": ["-f", "test/files/all.jb"],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "hamok run",
             "type": "python",
             "request": "launch",
