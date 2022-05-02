@@ -20,8 +20,8 @@ _Last changes: version 22.5_
 
 You can download the source here
 
-* [ZIP file](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.5.zip)
-* [Compressed tarball(.tgz)](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.5.tar.gz)
+* [ZIP file](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.6.zip)
+* [Compressed tarball(.tgz)](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.6.tar.gz)
 
 You should now have a file `Hamok-v22.5.[zip|tar.gz]`in your current directory. Unpack this archive where you want to install Hamök. I install it in the home directory of my `homeassistant`account.
 
