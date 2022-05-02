@@ -99,7 +99,7 @@ oekofen_ground_floor_roomtemp_act
 
 #### Entity related topics
 
-We follow the HA guidelines here. 
+We follow the HA guidelines here.
 
 MQTT topic names that contribute to the sensors have 4 components
 
@@ -154,7 +154,7 @@ When the MQTT topic changes HA may get confused and show errors like
 Platform mqtt does not generate unique IDs. ID oekofen_system_L_usb_stick already exists - ignoring binary_sensor.oekofen_system_usb_stick
 ```
 
-This usually means that there are 2 MQTT topics trying to create devices with the same ID. It means that you have to cleanup the retained MQTT messages. 
+This usually means that there are 2 MQTT topics trying to create devices with the same ID. It means that you have to cleanup the retained MQTT messages.
 
 The preferred way, to do is to remove the unneeded topics. Install a tool like [MQTT Explorer](http://mqtt-explorer.com/) and find the topics causing the issue and remove them. If you remove one to many, do not worry, restart hamok and they will reappear.
 
@@ -311,20 +311,18 @@ Valid values are:
 
 **<u>Overview</u>**
 
-| key                    | default   | description                                                  |
-| ---------------------- | --------- | ------------------------------------------------------------ |
-| `mqtt.broker`          | -         | Mandatory field. Host where the MQTT broker runs             |
-| `mqtt.port`            | 1883      | Port on which the MQTT broker listens.                       |
-| `oekofen.host`         | -         | Mandatory field. IP address of the Ökofen system. This may be a host name if that works for you |
-| `oekofen.jsonport`     | -         | Mandatory field. The JSON port retrieved from the Ökofen system. |
-| `oekofen.jsonpassword` | -         | Mandatory field. The JSON password retrieved from the Ökofen system |
-| `monitor`              | -         | Mandatory field. A list of values to monitor. Must contain at least one value. |
-| `interval`             | 60        | The number of seconds between 2 requests. A value between 1 and 86400. |
-| `device`               | `Oekofen` | The name of the created device.                              |
-| `clientid`             | `hamok`   | The clientid used with the MQTT broker                       |
-| `logger`               | `default` | The logging configuration of Hamök                           |
-| mqttdebug              | `off`     | The specific MQTT debugging info is turned off.              |
-
+| key                    | Version | default   | description                                                  |
+| ---------------------- | :-----: | --------- | ------------------------------------------------------------ |
+| `mqtt.broker`          |    -    | -         | Mandatory field. Host where the MQTT broker runs             |
+| `mqtt.port`            |    -    | 1883      | Port on which the MQTT broker listens.                       |
+| `oekofen.host`         |    -    | -         | Mandatory field. IP address of the Ökofen system. This may be a host name if that works for you |
+| `oekofen.jsonport`     |    -    | -         | Mandatory field. The JSON port retrieved from the Ökofen system. |
+| `oekofen.jsonpassword` |    -    | -         | Mandatory field. The JSON password retrieved from the Ökofen system |
+| `monitor`              |    -    | -         | Mandatory field. A list of values to monitor. Must contain at least one value. |
+| `interval`             |    -    | 60        | The number of seconds between 2 requests. A value between 1 and 86400. |
+| `device`               |    -    | `Oekofen` | The name of the created device.                              |
+| `clientid`             |    -    | `hamok`   | The clientid used with the MQTT broker                       |
+| `mqttdebug`            |  22.6   | `off`     | Turns specific MQTT debugging on or off                      |
 ## Logging
 
 These are the critical and errors that you can find in your log and possible resolutions
@@ -393,7 +391,7 @@ The MQTT clientid consists of a maximum of 23 alphanumeric characters.
 
 **"Connecting to broker returned {rc}."**
 
-The MQTT broker refused the connection and the reason is specified in `rc`. 
+The MQTT broker refused the connection and the reason is specified in `rc`.
 
 | **rc** | **Meaning**                |
 | ------ | -------------------------- |

@@ -20,7 +20,10 @@
 
 ### Upgrade
 
+Changes have been made to the configuration file. If you use the default settings, the behavior will be the same before.
+If this is what you want you may want you may skip step 3 of the deployment guide.
 
+In any case, you may skip steps 2 (MQTT setup), and 4 (HA setup).
 
 ## Version 22.5
 
@@ -42,10 +45,10 @@
   * Added the `service.py` module
   * `hamqqt.py`handles only communication with MQTT, no business logic
   * cleaning up of debug messages.
-  
+
 ### Upgrade
 
-When upgrading use the deployment document and you can skip steps 2 (MQTT setup), 3 (Hamok setup), 4 (HA setup).  
+When upgrading use the deployment document and you can skip steps 2 (MQTT setup), 3 (Hamok setup), 4 (HA setup).
 
 
 ## Version 22.4
