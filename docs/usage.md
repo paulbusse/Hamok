@@ -242,9 +242,20 @@ The list must contain at least one element for the process to start. For more in
 
 ```yaml
 monitor:
-  - system.L_ambient
-  - hk1.L_flowtemp_act
+  system.L_ambient:
+  hk1.L_flowtemp_act:
 ```
+
+You can specify a delay option for each of the monitors. 
+
+```yaml
+monitor:
+  system.L_ambient:
+  	delay: 300
+  hk1.L_flowtemp_act:
+```
+
+This means that the `system.L_ambient` monitor won't be updated until at least 300 seconds after the last update. The other value will be update as soon as a new value is detected. Which is driven by the *time between measurements*. Setting a delay lower than the the *time between measurements* has no effect.
 
 **Time between measurements**
 
@@ -311,6 +322,8 @@ Valid values are:
 
 **<u>Overview</u>**
 
+The version indicates when this key has been introduced or last changed
+
 | key                    | Version | default   | description                                                  |
 | ---------------------- | :-----: | --------- | ------------------------------------------------------------ |
 | `mqtt.broker`          |    -    | -         | Mandatory field. Host where the MQTT broker runs             |
@@ -318,7 +331,8 @@ Valid values are:
 | `oekofen.host`         |    -    | -         | Mandatory field. IP address of the Ökofen system. This may be a host name if that works for you |
 | `oekofen.jsonport`     |    -    | -         | Mandatory field. The JSON port retrieved from the Ökofen system. |
 | `oekofen.jsonpassword` |    -    | -         | Mandatory field. The JSON password retrieved from the Ökofen system |
-| `monitor`              |    -    | -         | Mandatory field. A list of values to monitor. Must contain at least one value. |
+| `monitor`              |  22.7   | -         | Mandatory field. A list of values to monitor. Must contain at least one value. |
+| `<monitor>.delay`      |  22.7   | 0         | The minimal time between 2 updates of the monitored value it relates to. This can be specified per monitor. |
 | `interval`             |    -    | 60        | The number of seconds between 2 requests. A value between 1 and 86400. |
 | `device`               |    -    | `Oekofen` | The name of the created device.                              |
 | `clientid`             |    -    | `hamok`   | The clientid used with the MQTT broker                       |

@@ -26,6 +26,7 @@
 - config: MQTT keepalive
 - config: failure timeout
 - config: time between 2 connects to Ökofen
+- config validation by voluptuous
 
 # Issues
 

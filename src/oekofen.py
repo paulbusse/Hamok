@@ -98,7 +98,6 @@ class Oekofen:
         ent = entitylist.get(entityKey)
         if ent is None:
             ent = entity.factory(subname, systemlabel, entityname, data)
-            ent.enabled = entityKey in config.get(MONITOR)
             entitylist.add(entityKey, ent)
 
         v = data[VAL]

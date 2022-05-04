@@ -1,5 +1,19 @@
 # Release History
 
+## Version 22.7
+
+### Functionality
+
+* Monitored values are reported once every delay.
+### Bug Fixes
+
+
+### Upgrade
+
+The current configuration file must be changed, the way monitored values are configured has been changed completely. In the deployment guide you must execute step 3.
+
+In any case, you may skip steps 2 (MQTT setup), and 4 (HA setup).
+
 ## Version 22.6
 
 ### Functionality

@@ -2,6 +2,7 @@
 Keys from the public configuration file
 """
 MONITOR = "monitor"
+DELAY = "delay"
 MQTT = "mqtt"
 OEKOFEN = "oekofen"
 HOST = "host"

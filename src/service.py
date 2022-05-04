@@ -27,6 +27,7 @@ class Service:
         if not self._booting:
             hamqttc.publish_value(self._connecttopic, ONLINE)
             entitylist.create_entities()
+            entitylist.report_entities()
             hamqttc.subscribe()
 
 
@@ -58,6 +59,7 @@ class Service:
         while servicestate.ok():
             time.sleep(interval)
             oekofenc.load()
+            entitylist.report_entities()
 
         if not servicestate.ok():
             llog.error(servicestate.report())

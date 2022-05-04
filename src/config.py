@@ -33,7 +33,7 @@ _defaultconfig = {
         JSONPORT: None,
         JSONPWD: None,
     },
-    MONITOR: [],
+    MONITOR: {},
     INTERVAL: 60,
     DEVICE: "Oekofen",
     MQTTDEBUG: False,
@@ -65,8 +65,11 @@ def cprint():
 
 def update(d, u):
     for k, v in u.items():
+        if v is None:
+            d[k] = None
         if isinstance(v, collections.abc.Mapping):
-            d[k] = update(d.get(k, {}), v)
+            r = update(d.get(k, {}), v)
+            d[k] = r
         else:
             d[k] = v
     return d
