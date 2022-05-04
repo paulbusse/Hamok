@@ -8,10 +8,10 @@ LOGGING = {
     'formatters': {
         'verbose': {
             'format':
-            '%(asctime)s %(levelname)-10s tid-%(thread)d: %(message)s'
+            '%(asctime)s %(levelname)-10s %(threadName)s: %(message)s'
         },
         'syslog': {
-            'format': 'hamok[%(process)d] %(levelname)-8s %(message)s'
+            'format': 'hamok[%(process)d] %(levelname)-8s %(threadName)s: %(message)s'
         },
         'simple': {
             'format': '%(message)s'

@@ -13,7 +13,6 @@
 - set device class for HA devices
 - reverse engineer state bitmap
 - config file through environment variable
-- give names to threads and use them in logging
 - extract version information from the system
 - [23]Make the max number of failures configurable
 - set the urllib timeout

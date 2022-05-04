@@ -5,9 +5,10 @@
 ### Functionality
 
 * Monitored values are reported once every delay.
+
 ### Bug Fixes
 
-
+* Logs now contain thread names iso thread ids
 ### Upgrade
 
 The current configuration file must be changed, the way monitored values are configured has been changed completely. In the deployment guide you must execute step 3.
