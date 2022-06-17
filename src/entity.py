@@ -27,6 +27,7 @@ from const import (
     DEVICE,
 
     BINARYSENSOR,
+    DEVICECLASS,
     MAXIMUM,
     MINIMUM,
     MONITOR,
@@ -72,9 +73,13 @@ class BaseEntity(object):
 
         self._enabled = self._oekofenname in monitors.keys();
         monconf = monitors.get(self._oekofenname, None)
-        self._delay = 0
-        if not monconf is None:
+
+        if monconf is None:
+            self._delay = 0
+            self._device_class = None
+        else:
             self._delay = monconf.get(DELAY, 0)
+            self._device_class = monconf.get(DEVICECLASS, None)
 
     def __repr__(self):
         return self._entityname
@@ -116,6 +121,10 @@ class BaseEntity(object):
     def okfname(self):
         return self._oekofenname
 
+    @property
+    def device_class(self):
+        return None
+
     def set_okfval(self, v):
         self._value = v
 
@@ -150,7 +159,6 @@ class BaseEntity(object):
                 'name': device,
                 'sw_version': 'v4.00b', #FIXME: find this from system
             },
-            # device_class: skipped for now
             'name': self._entityname,
             'unique_id': self._id,
         }
@@ -160,6 +168,10 @@ class BinarySensorEntity(BaseEntity):
     def __init__(self, entitytype: str, systemname: str, attribute: str, systemlabel: str, data ):
         super().__init__(entitytype, systemname, attribute, systemlabel, data)
 
+    @property
+    def device_class(self):
+        return self._device_class
+
     def set_okfval(self, v):
         hav = ON if v == 1 else OFF
         super().set_okfval(hav)
@@ -168,6 +180,8 @@ class BinarySensorEntity(BaseEntity):
         data = super().control_data()
         data['payload_on'] = ON
         data['payload_off'] = OFF
+        if not self._device_class is None:
+            data[DEVICECLASS] = self._device_class
         return data
 
 
@@ -213,6 +227,8 @@ class NumberSensorEntity(BaseEntity):
         data = super().control_data()
         if self._unit:
             data['unit_of_measurement'] = self._unit
+        if not self._device_class is None:
+            data[DEVICECLASS] = self._device_class
         return data
 
 
@@ -231,10 +247,7 @@ class ReadWriteEntity(BaseEntity):
         if v != self._value:
             oldval = self.get_okfval()
             self._value = v
-            jobhandler.schedule({
-                CALLBACK: do_set_haval,
-                ARGUMENTS: [self._oekofenname, self.get_okfval(), oldval]
-            })
+            jobhandler.schedule( do_set_haval, self._oekofenname, self.get_okfval(), oldval)
 
     def control_data(self):
         data = super().control_data()

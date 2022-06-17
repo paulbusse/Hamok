@@ -11,11 +11,19 @@ from const import (
 class Jobs:
     def __init__(self):
         self._queue = Queue()
+
+
+    def configure(self):
         for i in range(3):
             worker = threading.Thread(target=self.job_handler, args=(i,), daemon=True)
             worker.start()
 
-    def schedule(self, job):
+
+    def schedule(self, proc, *args):
+        job = {
+            CALLBACK: proc,
+            ARGUMENTS: args
+        }
         self._queue.put(job)
 
 

@@ -10,9 +10,6 @@ import llog
 
 from service import servicec
 from oekofen import oekofenc
-from jobs import jobhandler
-
-
 
 options = "c:f:hlp"
 longoptions = ["config=", "file=", "help", "list", "print"]
@@ -38,8 +35,7 @@ def _file():
 
 def _list():
     oekofenc.configure()
-    oekofenc.load()
-    jobhandler.wait()
+    oekofenc.load(False)
     entitylist.dump()
 
 

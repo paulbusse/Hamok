@@ -53,10 +53,7 @@ class Oekofen:
             return False
 
         if launchjob:
-            jobhandler.schedule({
-                    CALLBACK: oekofen_load,
-                    ARGUMENTS: []
-                })
+            jobhandler.schedule(oekofen_load)
             return True
         else:
             return oekofen_load()

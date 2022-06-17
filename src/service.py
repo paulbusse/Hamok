@@ -5,6 +5,7 @@ import entitylist
 import config
 import llog
 
+from jobs import jobhandler
 from oekofen import oekofenc
 from hamqtt import hamqttc
 from servicestate import servicestate
@@ -36,6 +37,7 @@ class Service:
         self._connecttopic = f"hamok/{component}/connection"
         hamqttc.configure(self._on_connect)
         oekofenc.configure()
+        jobhandler.configure()
 
 
     def run(self):

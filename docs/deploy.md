@@ -119,6 +119,8 @@ You should consider changing the `device` name now, if you want. Setting the dev
 
 You must also list at least one value to monitor. For this and other configuration settings please read the [user guide](usage.md)
 
+Note: in 22.7 we changed the configuration of the monitors. Your current configuration file will cause failures.
+
 ## Step 4: Configure Home Assistant
 
 _Last changes: v22.3_
@@ -135,7 +137,7 @@ If everything goes well you will see a success message.
 
 ## Step 5: Running Hamok
 
-_Last changes: v22.3_
+_Last changes: v22.7_
 
 Before running Hamok you need to install its dependencies:
 
@@ -241,4 +243,4 @@ To really validate if this works properly you should reboot your system and vali
 
 ## Step 7: Add entities
 
-Now is a good time to read the [manual](usage.md) and add a few entities.
+Now is a good time to read the [manual](usage.md) and configure a few entities.
