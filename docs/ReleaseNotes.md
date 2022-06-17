@@ -13,6 +13,7 @@
 * Logs now contain thread names instead of thread ids
 * No threads are started unless the service is started
 * the jobhandler now handles all jobs in the same way.
+* improved boot procedure
 
 ### Upgrade
 

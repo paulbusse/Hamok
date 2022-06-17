@@ -69,7 +69,7 @@ class Mqttc:
         servicestate.mqtt(self._connected)
 
         if self._connected:
-            if self._connectcallback():
+            if self._connectcallback:
                 self._connectcallback()
 
 
@@ -143,9 +143,14 @@ class Mqttc:
         try:
             ret = self._client.publish(topic, payload=data, qos=1, retain=True)
         except Exception as e:
-            llog.error(f"Failed to publish to MQTT topic {topic}: {e}.")
+            llog.error(f"Defining a new entity for {entity.name} failed: {e}.")
             exit()
-        llog.info(f"Defining a new entity for {entity.name}[Mid:{ret.mid}].")
+
+        if ret.rc == 0:
+            llog.info(f"Defining a new entity for {entity.name}[Mid:{ret.mid}].")
+        else:
+            llog.error(f"Defining a new entity for {entity.name} failed: {mqtt.error_string(ret.rc)}")
+            return
 
         ct = entity.cmdtopic
         if ct:
@@ -158,7 +163,11 @@ class Mqttc:
         except Exception as e:
             llog.error(f"Failed to publish to MQTT topic {topic}: {e}")
             return False
-        llog.info(f"Sending {v} on {topic}[Mid:{ret.mid}].")
+
+        if ret.rc == 0:
+            llog.info(f"Sending {v} on {topic}[Mid:{ret.mid}].")
+        else:
+            llog.error(f"Sending {v} on {topic} failed: {mqtt.error_string(ret.rc)}")
         return True
 
     def subscribe(self):
@@ -172,7 +181,10 @@ class Mqttc:
         except Exception as e:
             llog.error(f"Failed to subscribe to topics {topics.keys()}: {e}.")
             exit()
-        llog.info(f"Subscribing to topics: {list(topics.keys())}[Mid:{ret[1]}].")
+        if ret[0] == 0:
+            llog.info(f"Subscribing to topics: {list(topics.keys())}[Mid:{ret[1]}].")
+        else:
+            llog.error(f"Subscribing to topics failed: {mqtt.error_string(ret[0])}.")
 
 
 hamqttc = Mqttc()

@@ -368,8 +368,6 @@ The initial connect to the MQTT Broker failed. This error should be preceded by 
 
 ### Errors
 
-
-
 **"No MQTT broker specified."**
 
 The configuration of the MQTT broker is missing. There was no keyword `mqtt`in the configuration file. Hamök will stop running.
@@ -435,9 +433,17 @@ The initial connect fails and the `error` will specify why. If this happens to o
 
 This error can safely be ignored.
 
+**"Defining a new entity for {entity.name} failed: {error}."**
+
+Sending the information to HA about a new entity did not function correctly. The error should explain why.
+
 **"Failed to publish to MQTT topic {topic}: {error}."**
 
 Publishing to the topic failed. This should not happen. Please contact me when  it does.
+
+**"Sending {v} on {topic} failed: {error}"**
+
+Sending a value for an entity has failed. The error explains why. This message also occurs when control messages are being sent.
 
 **"Failed to subscribe to topics {topics}: {error}."**
 

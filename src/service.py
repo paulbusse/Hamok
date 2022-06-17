@@ -43,12 +43,14 @@ class Service:
     def run(self):
         interval = config.get(INTERVAL)
 
-        mqttc = hamqttc.connect()
+        mqttfl = hamqttc.connect()
         okfl  = oekofenc.load(False)
-        while servicestate.ok() and not mqttc and not okfl:
+        while servicestate.ok() and not (mqttfl and okfl):
             time.sleep(interval)
-            mqttc = hamqttc.connect()
-            okfl  = oekofenc.load(False)
+            if not mqttfl:
+                mqttfl = hamqttc.connect()
+            if not okfl:
+                okfl = oekofenc.load(False)
 
         if not servicestate.ok():
             llog.fatal(servicestate.report())

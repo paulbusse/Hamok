@@ -26,8 +26,6 @@
 - config validation by voluptuous
 
 # Issues
-- Subscribing to topics logs [Mid:None]
-- logfile: ERROR      MainThread: Failed to connect to MQTT broker at 10.207.122.128:1883 : [Errno 113] No route to host. but the process recovers
 - we sometimes receive a value of 3276,6°C which is out of range! we should validate incoming and outgoing values?
 
 
