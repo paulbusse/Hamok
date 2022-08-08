@@ -5,6 +5,7 @@ import entitylist
 import config
 import llog
 
+from jobs import jobhandler
 from oekofen import oekofenc
 from hamqtt import hamqttc
 from servicestate import servicestate
@@ -27,6 +28,7 @@ class Service:
         if not self._booting:
             hamqttc.publish_value(self._connecttopic, ONLINE)
             entitylist.create_entities()
+            entitylist.report_entities()
             hamqttc.subscribe()
 
 
@@ -35,17 +37,20 @@ class Service:
         self._connecttopic = f"hamok/{component}/connection"
         hamqttc.configure(self._on_connect)
         oekofenc.configure()
+        jobhandler.configure()
 
 
     def run(self):
         interval = config.get(INTERVAL)
 
-        mqttc = hamqttc.connect()
+        mqttfl = hamqttc.connect()
         okfl  = oekofenc.load(False)
-        while servicestate.ok() and not mqttc and not okfl:
+        while servicestate.ok() and not (mqttfl and okfl):
             time.sleep(interval)
-            mqttc = hamqttc.connect()
-            okfl  = oekofenc.load(False)
+            if not mqttfl:
+                mqttfl = hamqttc.connect()
+            if not okfl:
+                okfl = oekofenc.load(False)
 
         if not servicestate.ok():
             llog.fatal(servicestate.report())
@@ -58,6 +63,7 @@ class Service:
         while servicestate.ok():
             time.sleep(interval)
             oekofenc.load()
+            entitylist.report_entities()
 
         if not servicestate.ok():
             llog.error(servicestate.report())

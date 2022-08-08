@@ -1,5 +1,26 @@
 # Release History
 
+## Version 22.7
+
+### Functionality
+
+* Monitored values are reported once every delay.
+* Sensors, binary sensors and switches can have a device class
+
+
+### Bug Fixes
+
+* Logs now contain thread names instead of thread ids
+* No threads are started unless the service is started
+* the jobhandler now handles all jobs in the same way.
+* improved boot procedure
+
+### Upgrade
+
+The current configuration file must be changed, the way monitored values are configured has been changed completely. In the deployment guide you must execute step 3.
+
+In any case, you may skip steps 2 (MQTT setup), and 4 (HA setup).
+
 ## Version 22.6
 
 ### Functionality

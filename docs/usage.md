@@ -242,9 +242,26 @@ The list must contain at least one element for the process to start. For more in
 
 ```yaml
 monitor:
-  - system.L_ambient
-  - hk1.L_flowtemp_act
+  system.L_ambient:
+  hk1.L_flowtemp_act:
 ```
+
+You can specify a delay option for each of the monitors.
+
+```yaml
+monitor:
+  system.L_ambient:
+  	delay: 300
+    device_class: temperature
+  hk1.L_flowtemp_act:
+```
+
+This means that the `system.L_ambient` monitor won't be updated until at least 300 seconds after the last update. The other value will be update as soon as a new value is detected. Which is driven by the *time between measurements*. Setting a delay lower than the the *time between measurements* has no effect.
+
+You can also specify a `device_class` for certain fields. These fields can be found by running Hamök with the `-l` option and look at the first word in the brackets. If it says `sensor, binary_sensor` or `switch` you can specify a device class. If you specify a device class for an other entry, it will silently be ignored.
+
+For more information on device classes and how you can do this also within HA itself please read the Home Assistant documentation on [device class](https://www.home-assistant.io/docs/configuration/customizing-devices/#device-class)
+
 
 **Time between measurements**
 
@@ -311,6 +328,8 @@ Valid values are:
 
 **<u>Overview</u>**
 
+The version indicates when this key has been introduced or last changed
+
 | key                    | Version | default   | description                                                  |
 | ---------------------- | :-----: | --------- | ------------------------------------------------------------ |
 | `mqtt.broker`          |    -    | -         | Mandatory field. Host where the MQTT broker runs             |
@@ -318,7 +337,9 @@ Valid values are:
 | `oekofen.host`         |    -    | -         | Mandatory field. IP address of the Ökofen system. This may be a host name if that works for you |
 | `oekofen.jsonport`     |    -    | -         | Mandatory field. The JSON port retrieved from the Ökofen system. |
 | `oekofen.jsonpassword` |    -    | -         | Mandatory field. The JSON password retrieved from the Ökofen system |
-| `monitor`              |    -    | -         | Mandatory field. A list of values to monitor. Must contain at least one value. |
+| `monitor`              |  22.7   | -         | Mandatory field. A list of values to monitor. Must contain at least one value. |
+| `<monitor>.delay`      |  22.7   | 0         | The minimal time between 2 updates of the monitored value it relates to. This can be specified per monitor. |
+| `<monitor>.device_class` |  22.7   | -         | The HA device class to use for this monitor. |
 | `interval`             |    -    | 60        | The number of seconds between 2 requests. A value between 1 and 86400. |
 | `device`               |    -    | `Oekofen` | The name of the created device.                              |
 | `clientid`             |    -    | `hamok`   | The clientid used with the MQTT broker                       |
@@ -346,8 +367,6 @@ The mandatory configuration option was not given.
 The initial connect to the MQTT Broker failed. This error should be preceded by another error, explaining why the connection could not be made. This error only appears during startup.
 
 ### Errors
-
-
 
 **"No MQTT broker specified."**
 
@@ -414,9 +433,17 @@ The initial connect fails and the `error` will specify why. If this happens to o
 
 This error can safely be ignored.
 
+**"Defining a new entity for {entity.name} failed: {error}."**
+
+Sending the information to HA about a new entity did not function correctly. The error should explain why.
+
 **"Failed to publish to MQTT topic {topic}: {error}."**
 
 Publishing to the topic failed. This should not happen. Please contact me when  it does.
+
+**"Sending {v} on {topic} failed: {error}"**
+
+Sending a value for an entity has failed. The error explains why. This message also occurs when control messages are being sent.
 
 **"Failed to subscribe to topics {topics}: {error}."**
 

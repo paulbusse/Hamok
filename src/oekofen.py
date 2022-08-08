@@ -53,10 +53,7 @@ class Oekofen:
             return False
 
         if launchjob:
-            jobhandler.schedule({
-                    CALLBACK: oekofen_load,
-                    ARGUMENTS: []
-                })
+            jobhandler.schedule(oekofen_load)
             return True
         else:
             return oekofen_load()
@@ -98,7 +95,6 @@ class Oekofen:
         ent = entitylist.get(entityKey)
         if ent is None:
             ent = entity.factory(subname, systemlabel, entityname, data)
-            ent.enabled = entityKey in config.get(MONITOR)
             entitylist.add(entityKey, ent)
 
         v = data[VAL]

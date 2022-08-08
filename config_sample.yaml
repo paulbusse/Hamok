@@ -17,12 +17,12 @@ oekofen:
 # use the --list option.
 
 monitor:
-  - system.L_ambient     # sensor (numeric)
-#  - system.L_usb_stick   # binary sensor
-#  - hk1.temp_vacation    # number
-#  - pe1_mode             # select
-#  - ww1.heat_once        # switch
-#  - pe1.mode             # sensor (select)
+  system.L_ambient:     # sensor (numeric)
+#  system.L_usb_stick:   # binary sensor
+#  hk1.temp_vacation:    # number
+#  pe1_mode:             # select
+#  ww1.heat_once:        # switch
+#  pe1.mode:             # sensor (select)
 
 
 # interval between 2 measurements

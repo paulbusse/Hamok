@@ -1,3 +1,4 @@
+import time
 from entity import BaseEntity
 from hamqtt import hamqttc
 
@@ -31,4 +32,10 @@ def create_entities():
     for ent in _entities.values():
         if ent.enabled:
             hamqttc.create_entity(ent)
-            hamqttc.publish_value(ent.statetopic, ent.get_haval())
+
+
+def report_entities():
+    now = time.time()
+    for ent in _entities.values():
+        if ent.enabled:
+            ent.report(now)

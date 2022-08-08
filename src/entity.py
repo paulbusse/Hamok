@@ -12,6 +12,7 @@ Internally we only maintain the HA value.
 
 import re
 import config
+import llog
 
 from hamqtt import hamqttc
 from oekofen import oekofenc
@@ -22,11 +23,14 @@ from const import (
     ARGUMENTS,
     CALLBACK,
     COMPONENT,
+    DELAY,
     DEVICE,
 
     BINARYSENSOR,
+    DEVICECLASS,
     MAXIMUM,
     MINIMUM,
+    MONITOR,
     NUMBER,
     SELECT,
     SENSOR,
@@ -49,6 +53,7 @@ class BaseEntity(object):
         """ You cannot use any of the derived functions in this function """
         component = config.get(COMPONENT)
         device = config.get(DEVICE)
+        monitors = config.get(MONITOR)
 
         if attribute[0:2] == "L_":
             _friendly = attribute[2:]
@@ -62,8 +67,19 @@ class BaseEntity(object):
         self._id = device + "_" + systemlabel + "_" + attribute
         self._entityname = en
         self._oekofenname = systemlabel + "." + attribute
-        self._enabled = False
         self._value = None
+        self._latestreport = 0
+        self._latestvalue = None
+
+        self._enabled = self._oekofenname in monitors.keys();
+        monconf = monitors.get(self._oekofenname, None)
+
+        if monconf is None:
+            self._delay = 0
+            self._device_class = None
+        else:
+            self._delay = monconf.get(DELAY, 0)
+            self._device_class = monconf.get(DEVICECLASS, None)
 
     def __repr__(self):
         return self._entityname
@@ -105,16 +121,29 @@ class BaseEntity(object):
     def okfname(self):
         return self._oekofenname
 
+    @property
+    def device_class(self):
+        return None
+
     def set_okfval(self, v):
-        if not self._value:
-            self._value = v
-        elif v != self._value:
-            self._value = v
-            if self._enabled:
-                hamqttc.publish_value(self.statetopic, self.get_haval())
+        self._value = v
 
     def get_haval(self):
         return self._value
+
+    def report(self, now):
+        v = self.get_haval();
+        if self._latestvalue == v:
+            return
+
+        if self._latestreport + self._delay > now:
+            llog.debug(f"{self.name} has changed but too early to report.")
+            return
+
+        hamqttc.publish_value(self.statetopic, v)
+        self._latestreport = now
+        self._latestvalue = v
+
 
     def control_data(self):
         device = config.get(DEVICE)
@@ -130,7 +159,6 @@ class BaseEntity(object):
                 'name': device,
                 'sw_version': 'v4.00b', #FIXME: find this from system
             },
-            # device_class: skipped for now
             'name': self._entityname,
             'unique_id': self._id,
         }
@@ -140,6 +168,10 @@ class BinarySensorEntity(BaseEntity):
     def __init__(self, entitytype: str, systemname: str, attribute: str, systemlabel: str, data ):
         super().__init__(entitytype, systemname, attribute, systemlabel, data)
 
+    @property
+    def device_class(self):
+        return self._device_class
+
     def set_okfval(self, v):
         hav = ON if v == 1 else OFF
         super().set_okfval(hav)
@@ -148,6 +180,8 @@ class BinarySensorEntity(BaseEntity):
         data = super().control_data()
         data['payload_on'] = ON
         data['payload_off'] = OFF
+        if not self._device_class is None:
+            data[DEVICECLASS] = self._device_class
         return data
 
 
@@ -193,6 +227,8 @@ class NumberSensorEntity(BaseEntity):
         data = super().control_data()
         if self._unit:
             data['unit_of_measurement'] = self._unit
+        if not self._device_class is None:
+            data[DEVICECLASS] = self._device_class
         return data
 
 
@@ -211,10 +247,7 @@ class ReadWriteEntity(BaseEntity):
         if v != self._value:
             oldval = self.get_okfval()
             self._value = v
-            jobhandler.schedule({
-                CALLBACK: do_set_haval,
-                ARGUMENTS: [self._oekofenname, self.get_okfval(), oldval]
-            })
+            jobhandler.schedule( do_set_haval, self._oekofenname, self.get_okfval(), oldval)
 
     def control_data(self):
         data = super().control_data()

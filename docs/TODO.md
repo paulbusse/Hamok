@@ -10,15 +10,12 @@
 - upgrade to Python 3.10.
 - detect if hamok runs in virtual env
 - reload config on signal (systemctl?) or use an MQTT topic
-- set device class for HA devices
 - reverse engineer state bitmap
 - config file through environment variable
-- give names to threads and use them in logging
 - extract version information from the system
 - [23]Make the max number of failures configurable
 - set the urllib timeout
 - MQTT callbacks: make jobs out of the different callbacks
-- With -l option do not start the job_handler (?)
 - Test the config file errors
 - Make the return codes in on_connect user readable
 - handle forecast section of ökofen
@@ -26,8 +23,12 @@
 - config: MQTT keepalive
 - config: failure timeout
 - config: time between 2 connects to Ökofen
+- config validation by voluptuous
 
 # Issues
+- we sometimes receive a value of 3276,6°C which is out of range! we should validate incoming and outgoing values?
+
+
 
 # Refactoring
 
