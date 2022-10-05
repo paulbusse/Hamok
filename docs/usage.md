@@ -368,6 +368,26 @@ The initial connect to the MQTT Broker failed. This error should be preceded by 
 
 ### Errors
 
+
+
+
+
+
+
+src/config.py:            llog.error("The client id should only contain alphanumeric characters. Using default value")
+src/config.py:        llog.error("The clientid should contain between 1 and 23 alphanumeric characters. Using default value.")
+src/hamqtt.py:            llog.error(f"Connecting to broker returned {rc}.")
+src/hamqtt.py:        llog.error("Hamok is disconnected from MQTT Broker")
+src/hamqtt.py:            llog.error(f"Failed to connect to MQTT broker at {self._host}:{self._port} : {e}.")
+src/hamqtt.py:            llog.error(f"Disconnecting from broker failed: {e}")
+src/hamqtt.py:            llog.error(f"Defining a new entity for {entity.name} failed: {e}.")
+src/hamqtt.py:            llog.error(f"Defining a new entity for {entity.name} failed: {mqtt.error_string(ret.rc)}")
+src/hamqtt.py:            llog.error(f"Failed to publish to MQTT topic {topic}: {e}")
+src/hamqtt.py:            llog.error(f"Sending {v} on {topic} failed: {mqtt.error_string(ret.rc)}")
+src/hamqtt.py:            llog.error(f"Failed to subscribe to topics {topics.keys()}: {e}.")
+
+
+
 **"No MQTT broker specified."**
 
 The configuration of the MQTT broker is missing. There was no keyword `mqtt`in the configuration file. Hamök will stop running.
@@ -456,6 +476,10 @@ While connecting to the Ökofen system an error was detected. If errors are foun
 **"Could not open {file}: {error}"**
 
 The attribute to the -f option cannot be read; the error specifies why.
+
+**f"Subscribing to topics failed: {error}."**
+
+We could not subscribe to a set of topics. The error gives more detail.
 
 **"Service state: MQTT: {state} - Oekofen: {state}"**
 

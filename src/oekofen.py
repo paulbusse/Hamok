@@ -10,12 +10,9 @@ import llog
 from jobs import jobhandler
 from servicestate import servicestate
 from const import (
-    ARGUMENTS,
-    CALLBACK,
     HOST,
     JSONPORT,
     JSONPWD,
-    MONITOR,
     NAME,
     OEKOFEN,
     VAL,
@@ -90,6 +87,9 @@ class Oekofen:
         Parse the system part of data
         We are actually only interested in the ambient temperature
         """
+
+        if data[VAL] is None:
+            return
 
         entityKey = systemlabel + "." + entityname
         ent = entitylist.get(entityKey)

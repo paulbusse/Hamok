@@ -1,6 +1,6 @@
 <img src="pics/hamok.png" style="zoom: 50%;" />
 
-# Deployment (Version 22.7)
+# Deployment (Version 22.8)
 
 You need:
 
