@@ -457,6 +457,10 @@ While connecting to the Ökofen system an error was detected. If errors are foun
 
 The attribute to the -f option cannot be read; the error specifies why.
 
+**f"Subscribing to topics failed: {error}."**
+
+We could not subscribe to a set of topics. The error gives more detail.
+
 **"Service state: MQTT: {state} - Oekofen: {state}"**
 
 When Hamök exits because of issues. The state is

@@ -20,8 +20,6 @@ from jobs import jobhandler
 from service import servicec
 
 from const import (
-    ARGUMENTS,
-    CALLBACK,
     COMPONENT,
     DELAY,
     DEVICE,
@@ -216,12 +214,28 @@ class NumberSensorEntity(BaseEntity):
         else:
             self._factor = 1
 
+        if self._unit == '%':
+            self._min = 0
+            self._max = 100
+        elif MINIMUM in data.keys():
+            self._min = int(data[MINIMUM]) * self._factor
+            self._max = int(data[MAXIMUM]) * self._factor
+        else:
+            self._min = None
+            self._max = None
+
     def get_haval(self):
-        prec = 1 if self._factor < 1 else 0
-        return f"{self._value:.{prec}f}"
+        if self._value is not None:
+            prec = 1 if self._factor < 1 else 0
+            return f"{self._value:.{prec}f}"
 
     def set_okfval(self, v):
-        super().set_okfval(float(v) * self._factor)
+        fv = float(v) * self._factor
+        if self._min is not None:
+            if fv < self._min or fv > self._max:
+                llog.info(f'Ignoring value out of range({self._entityname}, {fv}).')
+                return
+        super().set_okfval(fv)
 
     def control_data(self):
         data = super().control_data()
@@ -284,12 +298,7 @@ class NumberEntity(NumberSensorEntity, ReadWriteEntity):
     def __init__(self, entitytype: str, systemname: str, attribute: str, systemlabel: str, data ):
         super().__init__(entitytype, systemname, attribute, systemlabel, data)
 
-        if MINIMUM in data.keys():
-            self._min = int(data[MINIMUM]) * self._factor
-            self._max = int(data[MAXIMUM]) * self._factor
-        else:
-            self._min = None
-            self._max = None
+
 
     def get_okfval(self):
         return f"{self._value / self._factor:.0f}"

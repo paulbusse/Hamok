@@ -6,8 +6,6 @@
     - requires will message
 - more secure usage of MQTT
 - validate that all monitors in the list exist
-- upgrade to Python 3.9
-- upgrade to Python 3.10.
 - detect if hamok runs in virtual env
 - reload config on signal (systemctl?) or use an MQTT topic
 - reverse engineer state bitmap
@@ -22,17 +20,17 @@
 - handle weather section of ökofen
 - config: MQTT keepalive
 - config: failure timeout
-- config: time between 2 connects to Ökofen
+- config: time between 2 connects to Ökofen min 2.5 secs
 - config validation by voluptuous
+- mqttdebug should be part of the mqtt setting.
 
 # Issues
-- we sometimes receive a value of 3276,6°C which is out of range! we should validate incoming and outgoing values?
+
 
 
 
 # Refactoring
 
-- all jobs should be created using schedule
 - entity.factory: oekofen specific part should go to oekofen.py
 - create_entity needs to go (back) to entitylist.py
 - move the initial connect to run in service.py

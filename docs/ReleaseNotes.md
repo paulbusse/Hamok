@@ -1,5 +1,21 @@
 # Release History
 
+# Version 22.8
+
+### Functionality
+
+* Added check for values coming back from Ökofen
+* Now runs with Python 3.8, 3.9, 3.10.
+
+
+### Bug Fixes
+
+* config.sample is outdated
+
+### Upgrade
+
+Simply install 22.8. Configuration should work as is.
+
 ## Version 22.7
 
 ### Functionality
