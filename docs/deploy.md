@@ -16,14 +16,14 @@ If you are upgrading you can skip steps 3, 4 and 6. You may want to look at step
 
 ## Step 1: Download the source
 
-_Last changes: version 22.7_
+_Last changes: version 22.8_
 
 You can download the source here
 
-* [ZIP file](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.7.zip)
-* [Compressed tarball(.tgz)](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.7.tar.gz)
+* [ZIP file](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.8.zip)
+* [Compressed tarball(.tgz)](https://github.com/paulbusse/Hamok/archive/refs/tags/v22.8.tar.gz)
 
-You should now have a file `Hamok-v22.7.[zip|tar.gz]`in your current directory. Unpack this archive where you want to install Hamök. I install it in the home directory of my `homeassistant`account.
+You should now have a file `Hamok-v22.8.[zip|tar.gz]`in your current directory. Unpack this archive where you want to install Hamök. I install it in the home directory of my `homeassistant`account.
 
 The  rest of this guide assumes that you are located in the top directory of the code.
 
