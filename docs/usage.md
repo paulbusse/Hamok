@@ -346,7 +346,9 @@ The version indicates when this key has been introduced or last changed
 | `mqttdebug`            |  22.6   | `off`     | Turns specific MQTT debugging on or off                      |
 ## Logging
 
-These are the critical and errors that you can find in your log and possible resolutions
+These are the critical and errors that you can find in your log and possible
+resolutions. There are more entries you may find in your log at info or warning
+level. They should be self-explanatory (but probably aren't).
 
 ### Critical
 
