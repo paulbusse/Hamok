@@ -1,6 +1,21 @@
 # Release History
 
-# Version 22.8
+## Version 23.1
+
+### Functionality
+
+* Added check for values coming back from Ökofen, now also for temperatures
+* Now runs with Python 3.8, 3.9, 3.10.
+
+
+### Bug Fixes
+
+* config.sample is outdated
+
+### Upgrade
+
+Simply install 23.1. Configuration should work as is.
+## Version 22.8
 
 ### Functionality
 

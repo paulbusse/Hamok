@@ -217,6 +217,9 @@ class NumberSensorEntity(BaseEntity):
         if self._unit == '%':
             self._min = 0
             self._max = 100
+        elif self._unit == '°C':
+            self._min = -50
+            self._max = 1500
         elif MINIMUM in data.keys():
             self._min = int(data[MINIMUM]) * self._factor
             self._max = int(data[MAXIMUM]) * self._factor
