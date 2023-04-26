@@ -1,5 +1,14 @@
 # Release History
 
+## Version 23.2
+
+### Fixes
+
+* 51f93c0: Fix range validation bug on NumberSensorEntity, when disabled it still validates.
+
+### Upgrade
+
+Simply install 23.2. Configuration should work as is.
 ## Version 23.1
 
 ### Functionality

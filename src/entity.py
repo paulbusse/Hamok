@@ -235,7 +235,7 @@ class NumberSensorEntity(BaseEntity):
     def set_okfval(self, v):
         fv = float(v) * self._factor
         if self._min is not None:
-            if fv < self._min or fv > self._max:
+            if self._enabled and (fv < self._min or fv > self._max):
                 llog.info(f'Ignoring value out of range({self._entityname}, {fv}).')
                 return
         super().set_okfval(fv)
