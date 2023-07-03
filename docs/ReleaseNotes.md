@@ -1,5 +1,15 @@
 # Release History
 
+## Version 23.3
+
+### Fixes
+
+* Fix out of range index for SelectSensorEntity.
+
+### Upgrade
+
+Simply install 23.2. Configuration should work as is.
+
 ## Version 23.2
 
 ### Fixes
