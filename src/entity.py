@@ -189,6 +189,10 @@ class SelectSensorEntity(BaseEntity):
         self._options = self._split(data[FORMAT])
 
     def set_okfval(self, v):
+        iv = int(v)
+        if iv < 0 or iv >= len(self._options):
+            llog.info( f"{self._entityname}: option not available ({iv} out of {len(self._options)}). Ignored.")
+            return
         super().set_okfval(self._options[int(v)])
 
     @property
